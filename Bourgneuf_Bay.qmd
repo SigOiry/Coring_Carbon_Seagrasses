@@ -627,8 +627,8 @@ leaflet() %>%
     project = TRUE,
     colors  = pal, 
     opacity = 0.8, 
-    layerId = "Years above 50%",
-    group = "Years above 50%"
+    layerId = "Amount of Years above 50%",
+    group = "Amount of Years above 50%"
   ) %>% 
   # add a continuous legend
   addLegend(
@@ -642,12 +642,13 @@ leaflet() %>%
     # map    = .,
     x = r_above50[[1]],
     project = TRUE,
-    layerId= "Years above 50%",
+    layerId= "Amount of Years above 50%",
     type   = "mousemove",
     digits = 0,
     prefix = ""
   )%>%
-      addLayersControl(overlayGroups = "Years above 50%")
+      addLayersControl(overlayGroups = "Amount of Years above 50%")
+
 ```
 
 ```{r Historical patches data}
