@@ -5,10 +5,15 @@ editor_options:
 ---
 
 <!-- <div style="text-align: center; margin-top: 20px;"> -->
+
 <!--   <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Bourgneuf_Bay.zip', '_blank');" -->
+
 <!--           style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"> -->
+
 <!--     Download the Qgis project of Bourgneuf Bay -->
+
 <!--   </button> -->
+
 <!-- </div> -->
 
 ```{r update gitignore}
@@ -53,7 +58,7 @@ if (length(large_files) > 0) {
 }
 ```
 
-Cádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of *Zostera noltei* and *Zostera marina*. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in @fig-map_IZ_CA, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. Saltmarsh areas are not concidered for this study and have therefore been removed from the mask. 
+Cádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of *Zostera noltei* and *Zostera marina*. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in @fig-map_IZ_CA, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. Saltmarsh areas are not concidered for this study and have therefore been removed from the mask.
 
 ```{r leafletmap Intertidal_BB}
 #| label: fig-map_IZ_CA
@@ -582,7 +587,7 @@ knitr::include_graphics("Plots/Animation_SPC_CA.gif")
 
 ## Historical seagrass patches of the meadow
 
-```{r Historical patch}
+```{r Historical patch_CA}
 #| cache: false
 #| echo: false
 #| warning: false
@@ -673,7 +678,7 @@ morethan33 <- rast("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif
   reframe(x = mean(x), y = mean(y), n = nrow(.))
 ```
 
-@fig-historical_patches_CA shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The inner part of the meadows has shown an SPC higher then 50% every years since the start of the time serie in 2017. The upper part of the meadows, toward the shore seems to be more recent. 
+@fig-historical_patches_CA shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The inner part of the meadows has shown an SPC higher then 50% every years since the start of the time serie in 2017. The upper part of the meadows, toward the shore seems to be more recent.
 
 ## Year of the maximum of cover
 
