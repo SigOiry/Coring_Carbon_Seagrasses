@@ -832,3 +832,151 @@ leaflet() %>%
 ```
 
 @fig-decline_CA shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_CA. On average, the meadow has been losing `r abs(round(data_declineCA$mean, 2))`% of its seagrass cover per year since reaching its maximum.
+
+```{r SHP}
+#| cache: false
+#| echo: false
+#| warning: false
+#| eval: false
+
+library(terra)
+library(Utilities.Package)
+library(tidyverse)
+
+img_list <- list.files("Data/Cadiz_Bay/SPC", pattern = ".tif", full.names = T)
+
+output <- matrix(ncol = 5) %>% 
+  as.data.frame()
+
+for (i in 1:length(img_list)) {
+  
+  
+  img_i <- rast(img_list[i])
+  df_i <-  img_i %>% 
+    as.data.frame(xy=T)
+  
+  names(df_i)<- c("x","y","SPC")
+  
+  SPC_20_shp <- img_i >= 20
+  SPC_20_shp <- terra::as.polygons(SPC_20_shp) %>% 
+    sf::st_as_sf()
+  plot(SPC_20_shp)
+  
+  names(SPC_20_shp) <- c("IsAbove","geometry")
+  
+  SPC_20<-nrow(df_i)*(res(img_i)[1]*res(img_i)[2])*1e-4
+  Density_SPC_20<-mean(df_i$SPC)
+  
+  df_i_50<-df_i %>% 
+    dplyr::filter(SPC>=50)
+  
+  SPC_50_shp <- img_i >= 50
+  SPC_50_shp <- terra::as.polygons(SPC_50_shp) %>% 
+    sf::st_as_sf()
+  names(SPC_50_shp) <- c("IsAbove","geometry")
+  
+  
+  
+  SPC_50<-nrow(df_i_50)*(res(img_i)[1]*res(img_i)[2])*1e-4
+  
+  df_i_80<-df_i %>% 
+    dplyr::filter(SPC>=80)
+  
+  SPC_80_shp <- img_i >= 80
+  SPC_80_shp <- terra::as.polygons(SPC_80_shp) %>% 
+    sf::st_as_sf()
+  names(SPC_80_shp) <- c("IsAbove","geometry")
+  
+  SPC_80<-nrow(df_i_80)*(res(img_i)[1]*res(img_i)[2])*1e-4
+  
+  output[i,1]<-gsub(".*/","",img_list[i])
+  output[i,2]<-SPC_20
+  output[i,3]<-SPC_50
+  output[i,4]<-SPC_80
+  output[i,5]<-Density_SPC_20
+  
+  output_file20 <- gsub("_SPC.tif","_SPC20.shp",img_list[i])
+  output_file20 <- gsub("test","test/shp",output_file20)
+  
+  output_file50 <- gsub("_SPC.tif","_SPC50.shp",img_list[i])
+  output_file50 <- gsub("test","test/shp",output_file50)
+  
+  output_file80 <- gsub("_SPC.tif","_SPC80.shp",img_list[i])
+  output_file80 <- gsub("test","test/shp",output_file80)
+  
+  sf::write_sf(SPC_20_shp, output_file20)
+  sf::write_sf(SPC_50_shp, output_file50)
+  sf::write_sf(SPC_80_shp, output_file80)
+  
+  
+  
+}
+
+names(output)<-c("img_name","SPC20","SPC50","SPC80","Density")
+write.csv(output,"Data/Cadiz_Bay/SPC/SPC_estimation.csv")
+
+
+mask <- vect("Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp")
+stk <- rast(img_list)
+
+values(stk)[values(stk)<50] <- 0
+values(stk)[is.na(values(stk))] <- 0
+values(stk)[values(stk)>=50] <- 1
+
+
+Sum_50 <- ((sum(stk)/8)*100 )%>% 
+  crop(mask, mask = T)
+# 
+# ggplot()+
+#   geom_spatraster(data = Sum)+
+#   theme_Bede_Map()
+
+writeRaster(Sum_50, "Data/Cadiz_Bay/Output/Freq_above_50.tif", overwrite = T)
+
+mask <- vect("Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp")
+stk <- rast(img_list)
+
+values(stk)[values(stk)<80] <- 0
+values(stk)[is.na(values(stk))] <- 0
+values(stk)[values(stk)>=80] <- 1
+
+
+Sum_80 <- ((sum(stk)/8)*100 )%>% 
+  crop(mask, mask = T)
+
+writeRaster(Sum_80, "Data/Cadiz_Bay/Output/Freq_above_80.tif", overwrite = T)
+
+
+#### Freq above 50
+
+  
+  freq_20_shp <- Sum_50 <= 20
+  freq_20_shp <- terra::as.polygons(freq_20_shp) %>% 
+    sf::st_as_sf() %>% 
+    dplyr::filter(sum == 1) %>% 
+    mutate(class = "0 to 20")
+  plot(freq_20_shp)
+  
+    freq_50_shp <- (Sum_50 > 20)&(Sum_50 <= 50)
+  freq_50_shp <- terra::as.polygons(freq_50_shp) %>% 
+    sf::st_as_sf() %>% 
+    dplyr::filter(sum == 1) %>% 
+    mutate(class = "20 to 50")
+  plot(freq_50_shp)
+  
+  freq_80_shp <- (Sum_50 > 50)
+  freq_80_shp <- terra::as.polygons(freq_80_shp) %>% 
+    sf::st_as_sf() %>% 
+    dplyr::filter(sum == 1) %>% 
+    mutate(class = "50 to 100")
+  plot(freq_80_shp)
+  
+  shp_all <- rbind(freq_20_shp,freq_50_shp,freq_80_shp) %>% 
+    dplyr::select(-sum)
+  
+  
+plot(shp_all)
+
+sf::write_sf(shp_all,"Data/Cadiz_Bay/Output/Freq_Higher_50percent_3class.shp")
+```
+
