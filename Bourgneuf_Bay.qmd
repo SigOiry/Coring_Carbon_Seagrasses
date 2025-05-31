@@ -1,0 +1,830 @@
+---
+title: "Bourgneuf Bay"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r update gitignore}
+#| cache: false
+#| echo: false
+#| warning: false
+#| eval: false
+
+library(fs)
+
+# Define the size threshold in bytes (100 MB)
+size_threshold <- 100 * 1024 * 1024
+
+# Get a list of all files in the repository
+files <- dir_ls(recurse = TRUE, type = "file")
+
+# Filter files larger than the size threshold
+large_files <- files[file_info(files)$size > size_threshold]
+
+# Check if there are large files
+if (length(large_files) > 0) {
+  # Read the existing .gitignore file if it exists
+  gitignore_path <- ".gitignore"
+  gitignore_content <- if (file_exists(gitignore_path)) {
+    readLines(gitignore_path)
+  } else {
+    character(0)
+  }
+  
+  # Identify files not already in .gitignore
+  files_to_add <- large_files[!large_files %in% gitignore_content]
+  
+  # Append new large files to .gitignore
+  if (length(files_to_add) > 0) {
+    writeLines(c(gitignore_content, files_to_add), gitignore_path)
+    message(length(files_to_add), " file(s) added to .gitignore.")
+  } else {
+    message("No new files to add to .gitignore.")
+  }
+} else {
+  message("No files larger than 100 MB found.")
+}
+```
+
+Bourgneuf Bay is a broad, shallow coastal bay situated on the French Atlantic coast, between the island of Noirmoutier and the mainland. Bordered by salt marshes, oyster farms, and mudflats, it is characterized by its extensive intertidal zones. The bay hosts large seagrass meadows, mainly composed of *Zostera noltei*, which cover wide areas of the seabed. These meadows are especially visible at low tide and stretch across the southern and western parts of the bay. As shown in @fig-map_IZ_BB, the area considered in this study spans more than 23 km².
+
+```{r leafletmap Intertidal_BB}
+#| label: fig-map_IZ_BB
+#| fig-cap: Intertidal Mask of Bourgneuf Bay
+#| echo: false
+#| error: false
+#| message: false
+#| warning: false
+#| out-width: "95%"
+
+# install.packages(c("sf","leaflet"))  # uncomment to install if needed
+library(sf)
+library(leaflet)
+library(units)
+
+
+# 1) Read your polygon shapefile
+shp_path <- "Data/Bourgneuf_Bay/SHP/mask_meadow.shp"
+polygons <- st_read(shp_path, quiet = TRUE)
+
+
+# 2) Compute area in km²
+#    a) project to Web Mercator (units in metres)
+polygons_m <- st_transform(polygons, 3857)
+
+#    b) calculate area (gives units m^2), convert to km^2, drop units
+polygons$area_km2 <- set_units(st_area(polygons_m), km^2)
+polygons$area_km2 <- drop_units(polygons$area_km2)
+
+# 3) Transform back to WGS84 for display
+polygons <- st_transform(polygons, 4326)
+# 3) Compute bounding box for initial view
+bb <- st_bbox(polygons)
+
+# 4) Build the Leaflet map
+leaflet() %>%
+  # Satellite background
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  
+  # Zoom to your data’s extent
+  fitBounds(
+    lng1 = bb["xmin"][[1]], lat1 = bb["ymin"][[1]],
+    lng2 = bb["xmax"][[1]], lat2 = bb["ymax"][[1]]
+  ) %>%
+  
+  # Overlay the actual polygons, faded
+  addPolygons(
+    data        = polygons,
+    color       = "goldenrod",    # border color
+    weight      = 2,            # border thickness
+    fillColor   = "goldenrod",    # fill color (same as border)
+    fillOpacity = 0.3,
+    popup       = ~paste0(
+      "<strong>Area:</strong> ",
+      round(area_km2, 2), " km²"
+    )
+  )
+
+```
+
+For this site, a time series combining images from the Landsat, SPOT, and Sentinel-2 missions has been used to monitor the seagrass meadow since 1985 (@tbl-images_BB). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](index.html#sec-Methodology)). 
+
+```{r leafletmap Intertidal_BB}
+#| label: tbl-images_BB
+#| fig-cap: List of Satellite images used to follow the meadows in Bourngeuf Bay
+#| echo: false
+#| error: false
+#| message: false
+#| warning: false
+#| out-width: "95%"
+
+# install.packages("flextable")  # if not already installed
+library(flextable)
+library(officer)
+library(tidyverse)
+
+year_to_remove <- c(1989,1992,1994,1999,2000,2007,2014)
+
+# example data
+sat_images <- data.frame(
+  Date    = as.Date(c("1985-09-13", 
+                      "1986-10-02", 
+                      "1987-07-26",
+                      "1988-10-15",
+                      "1989-09-01",
+                      "1990-09-04",
+                      "1991-09-28",
+                      "1992-08-15",
+                      "1993-09-20",
+                      "1994-08-05",
+                      "1995-10-11",
+                      "1997-09-07",
+                      "1998-09-21",
+                      "1999-07-02",
+                      "2000-07-30",
+                      "2001-09-02",
+                      "2002-09-24",
+                      "2003-09-26",
+                      "2004-09-17",
+                      "2005-09-18",
+                      "2006-09-23",
+                      "2007-07-17",
+                      "2008-09-28",
+                      "2009-09-08",
+                      "2010-09-12",
+                      "2011-10-02",
+                      "2012-09-28",
+                      "2013-10-05",
+                      "2014-10-09",
+                      "2015-09-30",
+                      "2016-08-22",
+                      "2017-10-06",
+                      "2018-09-14",
+                      "2019-09-16",
+                      "2020-09-05",
+                      "2021-09-23",
+                      "2022-08-11",
+                      "2023-09-03",
+                      "2024-09-17")),
+  Sensor  = c("Landsat", 
+              "Landsat", 
+              "Landsat",
+              "SPOT",
+              "Landsat",
+              "Landsat",
+              "SPOT",
+              "Landsat",
+              "SPOT",
+              "Landsat",
+              "Landsat",
+              "SPOT",
+              "SPOT",
+              "Landsat",
+              "SPOT",
+              "Landsat",
+              "SPOT",
+              "SPOT",
+              "Landsat",
+              "SPOT",
+              "Landsat",
+              "SPOT",
+              "Landsat",
+              "SPOT",
+              "SPOT",
+              "SPOT",
+              "SPOT",
+              "SPOT",
+              "SPOT",
+              "Sentinel-2",
+              "Sentinel-2",
+              "Sentinel-2",
+              "Sentinel-2",
+              "Sentinel-2",
+              "Sentinel-2",
+              "Sentinel-2",
+              "Sentinel-2",
+              "Sentinel-2",
+              "Sentinel-2"),
+  stringsAsFactors = FALSE
+) %>% 
+  mutate(year = as.character(Date) %>% 
+           substr(.,1,4) %>% 
+           as.numeric()) %>% 
+  dplyr::filter(!(year %in% year_to_remove))
+
+# # build flextable
+# ft <- flextable(sat_images) %>%
+#   set_header_labels(
+#     # Image  = "Image ID",
+#     Date   = "Acquisition Date",
+#     Sensor = "Sensor Type"
+#   ) %>%
+#   theme_vanilla() %>%                    # a clean, simple theme
+#   colformat_date(j = "Date", fmt = "%B %d, %Y") %>%  # e.g. “May 01, 2021”
+#   autofit() %>%                          # adjust column widths
+#   align(j = 1:2, align = "center", part = "all") %>% # center all cells
+#   bold(part = "header")                  # emphasize headers
+# 
+# # display
+# ft
+
+
+# découpage en 3 tiers
+n     <- nrow(sat_images)
+tier  <- ceiling(n/3)
+dfs   <- split(sat_images, rep(1:3, each = tier, length.out = n))
+
+# pour équilibrer, on complète avec NA si nécessaire
+for(i in seq_along(dfs)){
+  if(nrow(dfs[[i]]) < tier){
+    pad <- tier - nrow(dfs[[i]])
+    dfs[[i]][(nrow(dfs[[i]])+1):tier, ] <- NA
+  }
+}
+
+# concaténation côte à côte en six colonnes
+combined <- data.frame(
+  Date1   = dfs[[1]]$Date,   Sensor1 = dfs[[1]]$Sensor,
+  Date2   = dfs[[2]]$Date,   Sensor2 = dfs[[2]]$Sensor,
+  Date3   = dfs[[3]]$Date,   Sensor3 = dfs[[3]]$Sensor,
+  stringsAsFactors = FALSE
+)
+
+# définition de la bordure épaisse
+thick_border <- fp_border(color = "black", width = 2)
+
+# construction du flextable
+ft <- flextable(combined) %>%
+  set_header_labels(
+    Date1   = "Date", Sensor1 = "Capteur",
+    Date2   = "Date", Sensor2 = "Capteur",
+    Date3   = "Date", Sensor3 = "Capteur"
+  ) %>%
+  theme_vanilla() %>%
+  colformat_date(
+    j   = c("Date1", "Date2", "Date3"),
+    fmt = "%B %d, %Y"
+  ) %>%
+  align(
+    j     = 1:6,
+    align = "center",
+    part  = "all"
+  ) %>%
+  bold(part = "header") %>%
+  # ligne épaisse après la 2ᵉ et après la 4ᵉ colonne
+  vline(j = 2, border = thick_border, part = "all") %>%
+  vline(j = 4, border = thick_border, part = "all") %>% 
+  autofit()
+
+# affichez l'objet flextable
+ft
+```
+
+```{r Processing_BB}
+#| echo: false
+#| eval: false
+#| warning: false
+
+library(terra)
+library(tidyverse)
+library(tidyterra)
+library(leaflet)
+library(stars)  
+## 1. List your annual SPC TIFFs
+files <- list.files("Data/Bourgneuf_Bay/SPC", "\\.tif$", full.names = TRUE)
+
+# 2. Extract the year (YYYY) from each filename
+years <- as.integer(
+  format(
+    as.Date(
+      sub(".*_(\\d{8})_.*", "\\1", basename(files)),
+      format = "%Y%m%d"
+    ),
+    "%Y"
+  )
+)
+
+# 3. Sort files (and their years) so the last entry is the most recent
+ord   <- order(years)
+files <- files[ord]
+years <- years[ord]
+
+# 4. Load the stack and name each layer by its year
+r <- rast(files)
+names(r) <- years
+
+# 5. Choose your threshold
+X <- 50
+
+# 6. Build a logical stack: TRUE where > X
+bs <- r > X
+
+r_df <- r %>% 
+  as.data.frame(xy = T)
+
+# 7. Convert the logical stack to a matrix (rows=cells, cols=years)
+m <- as.data.frame(bs, xy = T)
+ncell   <- nrow(m)
+nlayers <- ncol(m)
+
+# 8. Pre‐allocate result vector
+res_vec <- integer(ncell)
+
+# 9. Loop over every pixel (cell)
+for (i in seq_len(ncell)) {
+  v <- m[i, ]
+  
+  # if most recent year is FALSE/NA → 0 years back
+  if (is.na(v[nlayers]) || !v[nlayers]) {
+    res_vec[i] <- 0L
+  } else {
+    # find all years where it was ≤ X
+    idxs_false <- which(!v)
+    
+    if (length(idxs_false) == 0) {
+      # never dropped ≤ X in the record
+      res_vec[i] <- NA_integer_
+    } else {
+      # most recent year it was ≤ X
+      last_false <- max(idxs_false)
+      # difference between current year and that year
+      res_vec[i] <- years[nlayers-2] - years[last_false-2]
+    }
+  }
+}
+
+r_df$Years_since_low_density <- res_vec
+
+r_out <- rast(r_df, type = "xyz", crs = "EPSG:2154")
+
+
+ggplot()+
+  geom_spatraster(data = r_out, aes(fill = Years_since_low_density))+
+  scale_fill_hypso_c(palette = "wiki-schwarzwald-cont")
+
+
+writeRaster(
+  r_out$Years_since_low_density,
+  filename = "Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif",
+  overwrite = TRUE
+)
+
+message("Done: each pixel shows how many years back to find a value ≤ ", X)
+
+
+###################   Slope since the max ####################### 
+
+# Load terra
+library(terra)
+
+# 1. List your annual rasters and extract the year from each filename
+files <- list.files("Data/Bourgneuf_Bay/SPC", "\\.tif$", full.names = TRUE)
+years <- as.integer(
+  format(
+    as.Date(
+      sub(".*_(\\d{8})_.*", "\\1", basename(files)),
+      format = "%Y%m%d"
+    ),
+    "%Y"
+  )
+)
+
+# 2. Sort so the last layer is the most recent year
+ord   <- order(years)
+files <- files[ord]
+years <- years[ord]
+
+# 3. Load as SpatRaster and name layers by year
+r <- rast(files)
+names(r) <- years
+
+
+# 4. Turn the multi‐layer raster into a matrix:
+#    rows = pixels, cols = years
+m       <- as.data.frame(r)
+ncell   <- nrow(m)
+nlayers <- ncol(m)
+
+# 5. Pre‐allocate result vectors
+max_year_vec <- integer(ncell)
+slope_vec    <- numeric(ncell)
+
+# 6. Loop over each pixel
+for (i in seq_len(ncell)) {
+  v <- m[i, ]
+  
+  # a) If all NA, record NA
+  if (all(is.na(v))) {
+    max_year_vec[i] <- NA_integer_
+    slope_vec[i]    <- NA_real_
+    next
+  }
+  
+  # b) Find index (and year) of the maximum value
+  idx_max <- which.max(v)
+  max_year_vec[i] <- years[idx_max]
+  
+  # c) If the max occurs in the last year, no regression period → NA
+  if (idx_max == nlayers) {
+    slope_vec[i] <- NA_real_
+  } else {
+    # Subset time & values from max‐year to last year
+    t_sub <- years[idx_max:nlayers]
+    y_sub <- v[idx_max:nlayers]
+    
+    # If too few non‐NA or no variation → slope = NA
+    if (length(na.omit(y_sub)) < 4 || length(unique(na.omit(y_sub))) < 4) {
+      slope_vec[i] <- NA_real_
+    } else {
+      # Fit linear model and extract slope
+      fit <- lm(as.numeric(y_sub) ~ t_sub)
+      
+      
+      if(is.na(coef(fit)[2])){
+        slope_vec[i] <- coef(fit)[2]
+      }else{
+        if (coef(fit)[2] >0) {
+          slope_vec[i] <- 0
+        }else{
+          slope_vec[i] <- coef(fit)[2]
+        }
+      }
+      
+      
+      
+    }
+  }
+}
+
+r_df <- r %>% 
+  as.data.frame(xy = T) %>% 
+  dplyr::select(x,y) %>% 
+  mutate(year_of_maximum = max_year_vec,
+         slope_since_maximum = slope_vec)
+
+
+r_out <- rast(r_df, type = "xyz", crs = "EPSG:2154")
+
+# 8. Write out the results
+writeRaster(r_out$year_of_maximum,
+            "Data/Bourgneuf_Bay/Output/year_of_maximum.tif",
+            overwrite = TRUE)
+writeRaster(r_out$slope_since_maximum,
+            "Data/Bourgneuf_Bay/Output/slope_since_maximum.tif",
+            overwrite = TRUE)
+
+message("Done: ‘year_of_maximum.tif’ and ‘slope_since_maximum.tif’ written.")
+
+
+```
+
+## Seagrass Percent Cover time series
+
+```{r DATA BB}
+#| cache: false
+#| echo: false
+#| warning: false
+
+library(Utilities.Package)
+library(gganimate)
+library(terra)
+## 1. List your annual SPC TIFFs
+files <- list.files("Data/Bourgneuf_Bay/SPC", "\\.tif$", full.names = TRUE)
+
+# 2. Extract the year (YYYY) from each filename
+years <- as.integer(
+  format(
+    as.Date(
+      sub(".*_(\\d{8})_.*", "\\1", basename(files)),
+      format = "%Y%m%d"
+    ),
+    "%Y"
+  )
+)
+
+# 3. Sort files (and their years) so the last entry is the most recent
+ord   <- order(years)
+files <- files[ord]
+years <- years[ord]
+
+# 4. Load the stack and name each layer by its year
+r <- rast(files)
+names(r) <- years
+
+
+df_r <- as.data.frame(r, xy = T) %>% 
+  pivot_longer(-c(x,y), names_to = "Years",values_to = "Values")
+
+
+min_SPC <- df_r %>% 
+  group_by(Years) %>% 
+  reframe(mean = mean(Values, na.rm = T)) %>% 
+  dplyr::filter(mean == min(mean))
+
+max_SPC <- df_r %>% 
+  group_by(Years) %>% 
+  reframe(mean = mean(Values, na.rm = T)) %>% 
+  dplyr::filter(mean == max(mean))
+
+
+```
+
+```{r GIF_SPC_BB}
+#| echo: false
+#| eval: false
+#| warning: false
+animate_SPC <- df_r %>% 
+  mutate(group_animate = Years) %>%
+  # dplyr::filter(Years == 2024) %>%
+  ggplot(aes(x = x, y = y, fill = Values, group = 1L))+
+  geom_tile()+
+  scale_fill_Bede(name = "Seagrass Cover (%)","mixed", discrete =F, na.value = "grey", limits = c(20, 100)) +
+  coord_equal()+
+  # labs(title = "Year: {closest_state}") +
+  geom_text(x = 308000, y = 6666500, aes(label = Years, group = group_animate),
+    inherit.aes = FALSE,
+    size = 10)+
+  theme_Bede_Map()+
+    # ggtitle(paste("Zoom jusqu’à", round(x_max), "nm")) +
+    theme(
+      legend.position = c(0.5, 0.5),
+      legend.text = element_text(size = 12),
+      axis.text.x = element_text(size = 12),
+      axis.text.y = element_text(size = 12)
+    )+
+  transition_manual(Years)  # transition_states(Years,
+  #                   transition_length = 2,
+  #                   state_length = 1)+
+  #   ease_aes("sine-in-out")
+
+
+rendered_SPC <- gganimate::animate(animate_SPC, duration = 33, fps = 1, 
+  width      = 800,   
+  height     = 800,   
+  units      = "px", res = 100, end_pause = 1, rewind = F, renderer = gifski_renderer(loop = T))
+
+
+anim_save("Plots/Animation_SPC_BB.gif", animation = rendered_SPC)
+
+
+  
+```
+
+```{r Figure1 GIF_SPC}
+#| cache: false
+#| echo: false
+#| warning: false
+#| fig-cap: >
+#|   Seagrass Cover in Percent over the years of the meadow of Bourgneuf Bay. Only pixels with an SPC above 20 % are displayed.  
+#| label: fig-SPC_GIF
+#| out-width: "100%"
+
+knitr::include_graphics("Plots/Animation_SPC_BB.gif")
+```
+
+@fig-SPC_GIF is show the evolution of the Seagrass Cover over time, since 1985. The minimum density was recorded in `r min_SPC$Years` with `r round(min_SPC$mean)`% of average cover, while the maximum density has been recorded in `r max_SPC$Years` with `r round(max_SPC$mean,0)`% of average cover.
+
+## Historical seagrass patches of the meadow
+
+```{r Historical patch}
+#| cache: false
+#| echo: false
+#| warning: false
+#| fig-cap: >
+#|   Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.
+#| label: fig-historical_patches
+#| out-width: "100%"
+
+library(raster)
+library(leaflet)
+library(leafem)
+library(viridis)
+
+# load or create your raster
+# r <- raster("path/to/your.tif")
+# for illustration, make a small test raster:
+r_above50 <- raster("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif")  
+
+# define a color palette function based on the raster’s values
+pal <- colorNumeric(
+  palette = viridis(100), 
+  domain  = values(r_above50),
+  na.color = "transparent"
+)
+
+# build the leaflet map
+leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = r_above50[[1]], 
+    project = TRUE,
+    colors  = pal, 
+    opacity = 0.8, 
+    layerId = "Years above 50%",
+    group = "Years above 50%"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal, 
+    values = values(r_above50),
+    title  = "Number of Years above 50%",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  addImageQuery(
+    # map    = .,
+    x = r_above50[[1]],
+    project = TRUE,
+    layerId= "Year above 50%",
+    type   = "mousemove",
+    digits = 0,
+    prefix = ""
+  )%>%
+      addLayersControl(overlayGroups = "Year above 50%")
+```
+
+```{r Historical patches data}
+#| cache: false
+#| echo: false
+#| warning: false
+
+library(terra)
+library(tidyverse)
+
+morethan29 <- rast("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif")  %>% 
+  as.data.frame(xy = T) %>% 
+  dplyr::filter(Years_since_low_density >= 29,
+                y>6663000,
+                x>306900) %>% 
+  reframe(x = mean(x), y = mean(y), n = nrow(.))
+
+pt_32630 <- st_sfc(st_point(c(morethan29$x, morethan29$y)), crs = 2154)
+# transform to EPSG:4326 (WGS84 lon/lat)
+pt_4326 <- st_transform(pt_32630, 4326)
+
+# extract the lon/lat
+coords_4326 <- st_coordinates(pt_4326) %>% 
+  as.vector()
+
+morethan33 <- rast("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif")  %>% 
+  as.data.frame(xy = T) %>% 
+  dplyr::filter(Years_since_low_density > 33,
+                y>6663000,
+                x>306900) %>% 
+  reframe(x = mean(x), y = mean(y), n = nrow(.))
+```
+
+@fig-historical_patches shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. One area of the meadow, covering `r morethan29$n*10*10` m², has sustained an SPC above 50% for the past 29 years. Within this area, 200 m² have maintained an SPC above 50% for over 34 consecutive years without interruption. This patch is centered around the coordinates y= `r coords_4326[2]` and x= `r coords_4326[1]`. 
+
+## Year of the maximum of cover
+
+```{r Year of the Max}
+#| cache: false
+#| echo: false
+#| warning: false
+#| fig-cap: >
+#|   Map of the year of maximum cover of the meadow  
+#| label: fig-max_year_BB
+#| out-width: "100%"
+
+library(raster)
+library(leaflet)
+library(leafem)
+library(viridis)
+
+# load or create your raster
+# r <- raster("path/to/your.tif")
+# for illustration, make a small test raster:
+r_years_max <- raster("Data/Bourgneuf_Bay/Output/year_of_maximum.tif")  
+
+# define a color palette function based on the raster’s values
+pal <- colorNumeric(
+  palette = RColorBrewer::brewer.pal(11, "Spectral"),
+  domain  = 1985:2024
+)
+
+# build the leaflet map
+leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = r_years_max[[1]], 
+    project = TRUE,
+    colors  = pal, 
+    opacity = 0.8, 
+    layerId = "Year of the Maximum",
+    group = "Year of the Maximum"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal, 
+    values = values(r_years_max),
+    title  = "Pixel value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  addImageQuery(
+    # map    = .,
+    x = r_years_max[[1]],
+    project = TRUE,
+    layerId= "Year of the Maximum",
+    type   = "mousemove",
+    digits = 0,
+    prefix = ""
+  )%>%
+      addLayersControl(overlayGroups = "Year of the Maximum")
+```
+
+```{r histogram Year of the max}
+#| label: fig-Hist_max_BB
+#| fig-cap: Area of the meadow reaching its maximum cover value ever for each year. 
+#| echo: false
+#| error: false
+#| message: false
+#| warning: false
+#| out-width: "95%"
+
+library(terra)
+library(tidyverse)
+
+rast("Data/Bourgneuf_Bay/Output/year_of_maximum.tif")  %>% 
+  as.data.frame() %>% 
+  group_by(year_of_maximum) %>% 
+  reframe(area = (n()*10*10)*0.0001) %>% 
+  ggplot(aes(x = year_of_maximum, y = area))+
+  geom_bar(stat="identity")+
+  theme_Bede()+
+  labs(x="Years",y="Area (ha)")
+
+```
+
+@fig-max_year_BB shows, for each pixel, the year when it reached its maximum Seagrass Percentage Cover (SPC). This same information is presented in @fig-Hist_max_BB as a histogram, where the area of meadow reaching its all-time maximum SPC is displayed for each year. Three key periods stand out: 1985–1986, 2002, and 2022. In 1985–1986, more than 15% of the meadow reached its highest SPC values in the time series. These are shown as red pixels in @fig-max_year_BB, typically located along the edges of the meadow. In 2002, 28% of the meadow reached its historical maximum, corresponding to yellow areas in @fig-max_year_BB, where the meadow expanded eastward and westward. Finally, in 2022, 52% of the meadow reached its highest recorded SPC, represented by blue areas in @fig-max_year_BB, mainly located in the central part of the meadow.
+
+
+## Rate of decline since the date of maximum
+
+```{r Year of the Max}
+#| cache: false
+#| echo: false
+#| warning: false
+#| fig-cap: >
+#|  Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in @fig-max_year_BB 
+#| label: fig-decline_BB
+#| out-width: "100%"
+
+library(raster)
+library(leaflet)
+library(leafem)
+library(viridis)
+
+# load or create your raster
+# r <- raster("path/to/your.tif")
+# for illustration, make a small test raster:
+r_decline <- raster("Data/Bourgneuf_Bay/Output/slope_since_maximum.tif")
+
+data_decline <- r_decline %>% 
+  as.data.frame() %>% 
+  reframe(mean = mean(slope_since_maximum, na.rm = T))
+
+r_decline[r_decline < -25] <- -25
+# define a color palette function based on the raster’s values
+pal <- colorNumeric(
+  palette = RColorBrewer::brewer.pal(11, "Spectral"),
+  domain  = 1:-26
+)
+
+# build the leaflet map
+leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = r_decline[[1]], 
+    project = TRUE,
+    colors  = pal, 
+    opacity = 0.8, 
+    layerId = "Rate of Decline",
+    group = "Rate of Decline"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal, 
+    values = values(r_decline),
+    title  = "Pixel value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  addImageQuery(
+    # map    = .,
+    x = r_decline[[1]],
+    project = TRUE,
+    layerId= "Rate of Decline",
+    type   = "mousemove",
+    digits = 2,
+    prefix = ""
+  )%>%
+      addLayersControl(overlayGroups = "Rate of Decline")
+```
+
+@fig-decline_BB shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_BB. On average, the meadow has been losing r abs(round(data_decline$mean, 2))% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow—likely where fishermen regularly carry out clam fishing activities—are experiencing much sharper declines, with rates reaching up to 25% per year.

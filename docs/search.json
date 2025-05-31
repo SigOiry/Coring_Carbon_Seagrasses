@@ -1,0 +1,58 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Where to perform the coring in each sites ?",
+    "section": "",
+    "text": "This website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.\nIt gathers analysis done on two sites, Cadiz Bay in Spain and Bourgneuf Bay in France.\n\n\n\n\nMap of study sites, where coring will be perform in the frame of the Rewrite Project.\n\n\n\nMethodology"
+  },
+  {
+    "objectID": "Bourgneuf_Bay.html",
+    "href": "Bourgneuf_Bay.html",
+    "title": "Bourgneuf Bay",
+    "section": "",
+    "text": "Bourgneuf Bay is a broad, shallow coastal bay situated on the French Atlantic coast, between the island of Noirmoutier and the mainland. Bordered by salt marshes, oyster farms, and mudflats, it is characterized by its extensive intertidal zones. The bay hosts large seagrass meadows, mainly composed of Zostera noltei, which cover wide areas of the seabed. These meadows are especially visible at low tide and stretch across the southern and western parts of the bay. As shown in Figure 1, the area considered in this study spans more than 23 km².\nFigure 1: Intertidal Mask of Bourgneuf Bay\nFor this site, a time series combining images from the Landsat, SPOT, and Sentinel-2 missions has been used to monitor the seagrass meadow since 1985 (Table 1). This work was published by Zoffoli et al. (2021). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see Methodology).\nTable 1\n\n\n\nDateCapteurDateCapteurDateCapteurseptembre 13, 1985Landsatseptembre 24, 2002SPOTseptembre 30, 2015Sentinel-2octobre 02, 1986Landsatseptembre 26, 2003SPOTaoût 22, 2016Sentinel-2juillet 26, 1987Landsatseptembre 17, 2004Landsatoctobre 06, 2017Sentinel-2octobre 15, 1988SPOTseptembre 18, 2005SPOTseptembre 14, 2018Sentinel-2septembre 04, 1990Landsatseptembre 23, 2006Landsatseptembre 16, 2019Sentinel-2septembre 28, 1991SPOTseptembre 28, 2008Landsatseptembre 05, 2020Sentinel-2septembre 20, 1993SPOTseptembre 08, 2009SPOTseptembre 23, 2021Sentinel-2octobre 11, 1995Landsatseptembre 12, 2010SPOTaoût 11, 2022Sentinel-2septembre 07, 1997SPOToctobre 02, 2011SPOTseptembre 03, 2023Sentinel-2septembre 21, 1998SPOTseptembre 28, 2012SPOTseptembre 17, 2024Sentinel-2septembre 02, 2001Landsatoctobre 05, 2013SPOT\nList of Satellite images used to follow the meadows in Bourngeuf Bay"
+  },
+  {
+    "objectID": "Data/Bourgneuf_Bay/SHP/mask_meadow.html",
+    "href": "Data/Bourgneuf_Bay/SHP/mask_meadow.html",
+    "title": "Sampling_Cores_Carbon",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       PROJCRS[“WGS 84 / UTM zone 30N”,BASEGEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],ID[“EPSG”,4326]],CONVERSION[“UTM zone 30N”,METHOD[“Transverse Mercator”,ID[“EPSG”,9807]],PARAMETER[“Latitude of natural origin”,0,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8801]],PARAMETER[“Longitude of natural origin”,-3,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8802]],PARAMETER[“Scale factor at natural origin”,0.9996,SCALEUNIT[“unity”,1],ID[“EPSG”,8805]],PARAMETER[“False easting”,500000,LENGTHUNIT[“metre”,1],ID[“EPSG”,8806]],PARAMETER[“False northing”,0,LENGTHUNIT[“metre”,1],ID[“EPSG”,8807]]],CS[Cartesian,2],AXIS[“(E)”,east,ORDER[1],LENGTHUNIT[“metre”,1]],AXIS[“(N)”,north,ORDER[2],LENGTHUNIT[“metre”,1]],USAGE[SCOPE[“Navigation and medium accuracy spatial referencing.”],AREA[“Between 6°W and 0°W, northern hemisphere between equator and 84°N, onshore and offshore. Algeria. Burkina Faso. Côte’ Ivoire (Ivory Coast). Faroe Islands - offshore. France. Ghana. Gibraltar. Ireland - offshore Irish Sea. Mali. Mauritania. Morocco. Spain. United Kingdom (UK).”],BBOX[0,-6,84,0]],ID[“EPSG”,32630]] +proj=utm +zone=30 +datum=WGS84 +units=m +no_defs 3114 32630 EPSG:32630 WGS 84 / UTM zone 30N utm EPSG:7030 false"
+  },
+  {
+    "objectID": "Bourgneuf_Bay.html#seagrass-percent-cover-time-series",
+    "href": "Bourgneuf_Bay.html#seagrass-percent-cover-time-series",
+    "title": "Bourgneuf Bay",
+    "section": "Seagrass Percent Cover time series",
+    "text": "Seagrass Percent Cover time series\n\n\n\n\n\n\n\n\nFigure 2: Seagrass Cover in Percent over the years of the meadow of Bourgneuf Bay. Only pixels with an SPC above 20 % are displayed.\n\n\n\n\n\n\nFigure 2 is show the evolution of the Seagrass Cover over time, since 1985. The minimum density was recorded in 1988 with 28% of average cover, while the maximum density has been recorded in 2022 with 59% of average cover."
+  },
+  {
+    "objectID": "Bourgneuf_Bay.html#historical-patches-of-seagrasses",
+    "href": "Bourgneuf_Bay.html#historical-patches-of-seagrasses",
+    "title": "Bourgneuf Bay",
+    "section": "Historical patches of seagrasses",
+    "text": "Historical patches of seagrasses\n\n# install.packages(c(\"terra\",\"leaflet\",\"leafem\",\"viridis\"))\nlibrary(terra)      # for SpatRaster\nlibrary(leaflet)    # for interactive maps\nlibrary(leafem)     # for addImageQuery()\nlibrary(viridis)    # for nice continuous palettes\n\nLe chargement a nécessité le package : viridisLite\n\n# 1. Load or create a SpatRaster\n#    Replace with rast(\"path/to/your.tif\") as needed\nr_spat &lt;- rast(\"Data/Bourgneuf_Bay/Output/Year_of_max_&_Slope_since_max.tif\")[[1]] \n\nr_leaf &lt;- raster::raster(r_spat)\n\n# only take the min/max for your palette domain\nrange_vals &lt;- range(values(r_leaf), na.rm = TRUE)\npal &lt;- colorNumeric(\n  palette  = viridis(100), \n  domain   = range_vals,\n  na.color = \"transparent\")\n# ---- build the map ----\nm &lt;- leaflet() %&gt;%\n  addTiles() %&gt;%\n  addRasterImage(\n    x       = r_leaf,\n    colors  = pal,\n    opacity = 0.8,\n    layerId = \"myRaster\"\n  ) %&gt;%\n  addLegend(\n    pal      = pal,\n    values   = range_vals,\n    title    = \"Pixel value\",\n    position = \"bottomright\"\n  ) %&gt;%\n  addImageQuery(\n    map     = .,\n    x       = r_leaf,       # must re-pass the raster here!\n    layerId = \"myRaster\",\n    type    = \"click\",\n    digits  = 2,\n    prefix  = \"Value: \"\n  )\n\nWarning in colors(.): Some values were outside the color scale and will be\ntreated as NA\n\n# ---- print it! ----\nm"
+  },
+  {
+    "objectID": "Bourgneuf_Bay.html#year-of-the-maximum-of-cover",
+    "href": "Bourgneuf_Bay.html#year-of-the-maximum-of-cover",
+    "title": "Bourgneuf Bay",
+    "section": "Year of the maximum of cover",
+    "text": "Year of the maximum of cover\n\n\n\n\n\n\n\n\nFigure 4: Map of the year of maximum cover of the meadow\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: Area of the meadow reaching its maximum cover value ever for each year.\n\n\n\n\n\nFigure 4 shows, for each pixel, the year when it reached its maximum Seagrass Percentage Cover (SPC). This same information is presented in Figure 5 as a histogram, where the area of meadow reaching its all-time maximum SPC is displayed for each year. Three key periods stand out: 1985–1986, 2002, and 2022. In 1985–1986, more than 15% of the meadow reached its highest SPC values in the time series. These are shown as red pixels in Figure 4, typically located along the edges of the meadow. In 2002, 28% of the meadow reached its historical maximum, corresponding to yellow areas in Figure 4, where the meadow expanded eastward and westward. Finally, in 2022, 52% of the meadow reached its highest recorded SPC, represented by blue areas in Figure 4, mainly located in the central part of the meadow."
+  },
+  {
+    "objectID": "Bourgneuf_Bay.html#historical-seagrass-patches-of-the-meadow",
+    "href": "Bourgneuf_Bay.html#historical-seagrass-patches-of-the-meadow",
+    "title": "Bourgneuf Bay",
+    "section": "Historical seagrass patches of the meadow",
+    "text": "Historical seagrass patches of the meadow\n\n\n\n\n\n\n\n\nFigure 3: Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.\n\n\n\n\nFigure 3 shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50%. One area of the meadow, covering 3100 m², has sustained an SPC above 50% for the past 29 years. Within this area, 200 m² have maintained an SPC above 50% for over 34 consecutive years without interruption. This patch is centered around the coordinates y= 46.9593738 and x= -2.1710815."
+  },
+  {
+    "objectID": "Bourgneuf_Bay.html#rate-of-decline-since-the-date-of-maximum",
+    "href": "Bourgneuf_Bay.html#rate-of-decline-since-the-date-of-maximum",
+    "title": "Bourgneuf Bay",
+    "section": "Rate of decline since the date of maximum",
+    "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing r abs(round(data_decline$mean, 2))% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow—likely where fishermen regularly carry out clam fishing activities—are experiencing much sharper declines, with rates reaching up to 25% per year."
+  }
+]

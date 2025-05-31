@@ -1,0 +1,21 @@
+project:
+  type: website
+  output-dir: "docs"
+
+website:
+  title: "Sampling_Cores_Carbon"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: Bourgneuf_Bay.qmd
+        text: Bourngeuf Bay
+format:
+  html:
+    theme:
+      - sandstone
+    css: styles.css
+    toc: true
+
+editor: visual
+
