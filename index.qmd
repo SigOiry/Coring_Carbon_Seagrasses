@@ -96,3 +96,36 @@ m %>% onRender(
 ```
 
 # Methodology {#sec-Methodology}
+
+## Images Downloading and preprocessing
+
+For Landsat and SPOT imagery, we refer to the methodology described by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). 
+
+Sentinel-2 images were downloaded from the ESA [Copernicus](https://browser.dataspace.copernicus.eu) plateform. For each study site, images were manually inspected to ensure they were cloud-free and acquired during low tide conditions. One image per year was selected, preferably around the date of maximum meadow extent as reported by [Davies et al. (2024)](https://www.nature.com/articles/s43247-024-01543-z). 
+To minimize interannual variability, images from the same Sentinel-2 tile were selected for each site. All images selected were pre-processed using baseline version 4.00 or higher. Consequently, 1000 was subtracted from the raw reflectance values of each band to obtain usable surface reflectance values ([More info](https://forum.step.esa.int/t/changes-in-band-data-after-25-jan-2022-baseline-04-00-harmonizevalues-sentinel-2-l2a-snappy/36270)). 
+
+## Images processing
+
+All image processing was performed in R, using the *terra* and *tidyverse* packages.Maps were generated using the *leaflet* package.
+
+### Seagrass Percent Cover
+The methodology applied in this study is adapted from [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). 
+
+Seagrass Percentage Cover (SPC) was derived from the NDVI using the equation established by [Zoffoli et al. (2020)](https://doi.org/10.1016/j.rse.2020.112020):
+
+$$
+SPC = 172.06 * NDVI - 22.18
+$$
+
+Pixels with SPC values below 20% were excluded from the analysis, due to the high risk of misclassification with other vegetation types. After applying the transformation, pixels with exceptionally high NDVI occasionally resulted in SPC values exceeding 100%. These were capped at 100%.
+
+### Historical seagrass patches of the meadow
+To identify consistent high-coverage areas within the meadow, we calculated the number of consecutive years—starting from 2024—in which each pixel exhibited an SPC above 50%. For example, a value of 0 indicates that in 2024 the SPC was below 50%, while a value of 5 means that SPC exceeded 50% every year since 2019 (i.e., 2024 − 5), but not in 2018.
+
+### Year of the maximum of cover
+
+For each pixel, the year corresponding to its maximum SPC value during the time series was identified and recorded.
+
+### Rate of decline since the date of maximum
+
+Starting from the year of maximum SPC, a linear regression was fitted for each pixel to model SPC change over time. The slope of the regression line, when statistically significant (p-value < 0.05), was assigned as the pixel's rate of decline (expressed as percent cover change per year).

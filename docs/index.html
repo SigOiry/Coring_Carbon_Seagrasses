@@ -91,6 +91,35 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/leaflet-providers-plugin-2.2.2/leaflet-providers-plugin.js"></script>
 
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -140,7 +169,17 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#sec-Methodology" id="toc-sec-Methodology" class="nav-link active" data-scroll-target="#sec-Methodology">Methodology</a></li>
+  <li><a href="#sec-Methodology" id="toc-sec-Methodology" class="nav-link active" data-scroll-target="#sec-Methodology">Methodology</a>
+  <ul class="collapse">
+  <li><a href="#images-downloading-and-preprocessing" id="toc-images-downloading-and-preprocessing" class="nav-link" data-scroll-target="#images-downloading-and-preprocessing">Images Downloading and preprocessing</a></li>
+  <li><a href="#images-processing" id="toc-images-processing" class="nav-link" data-scroll-target="#images-processing">Images processing</a>
+  <ul class="collapse">
+  <li><a href="#seagrass-percent-cover" id="toc-seagrass-percent-cover" class="nav-link" data-scroll-target="#seagrass-percent-cover">Seagrass Percent Cover</a></li>
+  <li><a href="#historical-seagrass-patches-of-the-meadow" id="toc-historical-seagrass-patches-of-the-meadow" class="nav-link" data-scroll-target="#historical-seagrass-patches-of-the-meadow">Historical seagrass patches of the meadow</a></li>
+  <li><a href="#year-of-the-maximum-of-cover" id="toc-year-of-the-maximum-of-cover" class="nav-link" data-scroll-target="#year-of-the-maximum-of-cover">Year of the maximum of cover</a></li>
+  <li><a href="#rate-of-decline-since-the-date-of-maximum" id="toc-rate-of-decline-since-the-date-of-maximum" class="nav-link" data-scroll-target="#rate-of-decline-since-the-date-of-maximum">Rate of decline since the date of maximum</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -175,15 +214,45 @@ ul.task-list li input[type="checkbox"] {
 <p>It gathers analysis done on two sites, Cadiz Bay in Spain ain a nd Bourgneuf Bay in France.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="leaflet html-widget html-fill-item" id="htmlwidget-56151d92944772597a35" style="width:95%;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-56151d92944772597a35">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldImagery",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addMarkers","args":[47.11667,-2.15,null,"Bourgneuf Bay",null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,"Bourgneuf Bay",{"interactive":false,"permanent":true,"direction":"top","opacity":1,"offset":[0,-30],"textsize":"10px","textOnly":false,"style":{"background":"white","padding":"3px 6px","border-radius":"4px","box-shadow":"0 0 2px rgba(0,0,0,0.5)"},"className":"","sticky":true},null]},{"method":"addMarkers","args":[36.53333,-6.3,null,"Cádiz Bay",null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,"Cádiz Bay",{"interactive":false,"permanent":true,"direction":"top","opacity":1,"offset":[0,-30],"textsize":"10px","textOnly":false,"style":{"background":"white","padding":"3px 6px","border-radius":"4px","box-shadow":"0 0 2px rgba(0,0,0,0.5)"},"className":"","sticky":true},null]}],"fitBounds":[36.53333,-6.3,47.11667,-2.15,[]],"limits":{"lat":[36.53333,47.11667],"lng":[-6.3,-2.15]}},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (function(el, x) {\n   // parse our R data.frame as JS array of objects\n   var data = [{\"name\":\"Bourgneuf Bay, France\",\"lat\":47.1167,\"lng\":-2.15,\"label\":\"Bourgneuf Bay\",\"url\":\"https://sigoiry.github.io/Coring_Carbon_Seagrasses/Bourgneuf_Bay.html\",\"xOffset\":0,\"yOffset\":-30},{\"name\":\"Cádiz Bay, Spain\",\"lat\":36.5333,\"lng\":-6.3,\"label\":\"Cádiz Bay\",\"url\":\"https://sigoiry.github.io/Coring_Carbon_Seagrasses/Cadiz_Bay.html\",\"xOffset\":0,\"yOffset\":-30}];\n   this.eachLayer(function(layer) {\n     // only consider our markers (they all have layerId set)\n     if(layer.options && layer.options.layerId) {\n       // find matching record by label\n       var rec = data.find(function(d){ return d.label === layer.options.layerId; });\n       if(rec && rec.url) {\n         layer.on('click', function() {\n           window.open(rec.url, '_blank');\n         });\n       }\n     }\n   });\n}).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-79dfb0e8448c3731623b" style="width:95%;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-79dfb0e8448c3731623b">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldImagery",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addMarkers","args":[47.11667,-2.15,null,"Bourgneuf Bay",null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,"Bourgneuf Bay",{"interactive":false,"permanent":true,"direction":"top","opacity":1,"offset":[0,-30],"textsize":"10px","textOnly":false,"style":{"background":"white","padding":"3px 6px","border-radius":"4px","box-shadow":"0 0 2px rgba(0,0,0,0.5)"},"className":"","sticky":true},null]},{"method":"addMarkers","args":[36.53333,-6.3,null,"Cádiz Bay",null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},null,null,null,null,"Cádiz Bay",{"interactive":false,"permanent":true,"direction":"top","opacity":1,"offset":[0,-30],"textsize":"10px","textOnly":false,"style":{"background":"white","padding":"3px 6px","border-radius":"4px","box-shadow":"0 0 2px rgba(0,0,0,0.5)"},"className":"","sticky":true},null]}],"fitBounds":[36.53333,-6.3,47.11667,-2.15,[]],"limits":{"lat":[36.53333,47.11667],"lng":[-6.3,-2.15]}},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (function(el, x) {\n   // parse our R data.frame as JS array of objects\n   var data = [{\"name\":\"Bourgneuf Bay, France\",\"lat\":47.1167,\"lng\":-2.15,\"label\":\"Bourgneuf Bay\",\"url\":\"https://sigoiry.github.io/Coring_Carbon_Seagrasses/Bourgneuf_Bay.html\",\"xOffset\":0,\"yOffset\":-30},{\"name\":\"Cádiz Bay, Spain\",\"lat\":36.5333,\"lng\":-6.3,\"label\":\"Cádiz Bay\",\"url\":\"https://sigoiry.github.io/Coring_Carbon_Seagrasses/Cadiz_Bay.html\",\"xOffset\":0,\"yOffset\":-30}];\n   this.eachLayer(function(layer) {\n     // only consider our markers (they all have layerId set)\n     if(layer.options && layer.options.layerId) {\n       // find matching record by label\n       var rec = data.find(function(d){ return d.label === layer.options.layerId; });\n       if(rec && rec.url) {\n         layer.on('click', function() {\n           window.open(rec.url, '_blank');\n         });\n       }\n     }\n   });\n}).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
 <p>Map of study sites, where coring will be perform in the frame of the Rewrite Project.</p>
 </div>
 </div>
 <section id="sec-Methodology" class="level1">
 <h1>Methodology</h1>
+<section id="images-downloading-and-preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="images-downloading-and-preprocessing">Images Downloading and preprocessing</h2>
+<p>For Landsat and SPOT imagery, we refer to the methodology described by <a href="https://doi.org/10.1016/j.ecolind.2021.108033">Zoffoli et al.&nbsp;(2021)</a>.</p>
+<p>Sentinel-2 images were downloaded from the ESA <a href="https://browser.dataspace.copernicus.eu">Copernicus</a> plateform. For each study site, images were manually inspected to ensure they were cloud-free and acquired during low tide conditions. One image per year was selected, preferably around the date of maximum meadow extent as reported by <a href="https://www.nature.com/articles/s43247-024-01543-z">Davies et al.&nbsp;(2024)</a>. To minimize interannual variability, images from the same Sentinel-2 tile were selected for each site. All images selected were pre-processed using baseline version 4.00 or higher. Consequently, 1000 was subtracted from the raw reflectance values of each band to obtain usable surface reflectance values (<a href="https://forum.step.esa.int/t/changes-in-band-data-after-25-jan-2022-baseline-04-00-harmonizevalues-sentinel-2-l2a-snappy/36270">More info</a>).</p>
+</section>
+<section id="images-processing" class="level2">
+<h2 class="anchored" data-anchor-id="images-processing">Images processing</h2>
+<p>All image processing was performed in R, using the <em>terra</em> and <em>tidyverse</em> packages.Maps were generated using the <em>leaflet</em> package.</p>
+<section id="seagrass-percent-cover" class="level3">
+<h3 class="anchored" data-anchor-id="seagrass-percent-cover">Seagrass Percent Cover</h3>
+<p>The methodology applied in this study is adapted from <a href="https://doi.org/10.1016/j.ecolind.2021.108033">Zoffoli et al.&nbsp;(2021)</a>.</p>
+<p>Seagrass Percentage Cover (SPC) was derived from the NDVI using the equation established by <a href="https://doi.org/10.1016/j.rse.2020.112020">Zoffoli et al.&nbsp;(2020)</a>:</p>
+<p><span class="math display">\[
+SPC = 172.06 * NDVI - 22.18
+\]</span></p>
+<p>Pixels with SPC values below 20% were excluded from the analysis, due to the high risk of misclassification with other vegetation types. After applying the transformation, pixels with exceptionally high NDVI occasionally resulted in SPC values exceeding 100%. These were capped at 100%.</p>
+</section>
+<section id="historical-seagrass-patches-of-the-meadow" class="level3">
+<h3 class="anchored" data-anchor-id="historical-seagrass-patches-of-the-meadow">Historical seagrass patches of the meadow</h3>
+<p>To identify consistent high-coverage areas within the meadow, we calculated the number of consecutive years—starting from 2024—in which each pixel exhibited an SPC above 50%. For example, a value of 0 indicates that in 2024 the SPC was below 50%, while a value of 5 means that SPC exceeded 50% every year since 2019 (i.e., 2024 − 5), but not in 2018.</p>
+</section>
+<section id="year-of-the-maximum-of-cover" class="level3">
+<h3 class="anchored" data-anchor-id="year-of-the-maximum-of-cover">Year of the maximum of cover</h3>
+<p>For each pixel, the year corresponding to its maximum SPC value during the time series was identified and recorded.</p>
+</section>
+<section id="rate-of-decline-since-the-date-of-maximum" class="level3">
+<h3 class="anchored" data-anchor-id="rate-of-decline-since-the-date-of-maximum">Rate of decline since the date of maximum</h3>
+<p>Starting from the year of maximum SPC, a linear regression was fitted for each pixel to model SPC change over time. The slope of the regression line, when statistically significant (p-value &lt; 0.05), was assigned as the pixel’s rate of decline (expressed as percent cover change per year).</p>
 
 
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->

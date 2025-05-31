@@ -1,11 +1,11 @@
 ---
-title: "Bourgneuf Bay"
+title: "Cadiz Bay"
 editor_options: 
   chunk_output_type: console
 ---
 
 <!-- <div style="text-align: center; margin-top: 20px;"> -->
-<!--   <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Bourgneuf_Bay.zip', '_blank');"  -->
+<!--   <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Bourgneuf_Bay.zip', '_blank');" -->
 <!--           style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"> -->
 <!--     Download the Qgis project of Bourgneuf Bay -->
 <!--   </button> -->
@@ -53,7 +53,7 @@ if (length(large_files) > 0) {
 }
 ```
 
-Cádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of *Zostera noltei* and *Zostera marina*. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in @fig-map_IZ_CA, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. 
+Cádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of *Zostera noltei* and *Zostera marina*. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in @fig-map_IZ_CA, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. Saltmarsh areas are not concidered for this study and have therefore been removed from the mask. 
 
 ```{r leafletmap Intertidal_BB}
 #| label: fig-map_IZ_CA
@@ -634,12 +634,12 @@ leaflet() %>%
     # map    = .,
     x = r_above50[[1]],
     project = TRUE,
-    layerId= "Year above 50%",
+    layerId= "Years above 50%",
     type   = "mousemove",
     digits = 0,
     prefix = ""
   )%>%
-      addLayersControl(overlayGroups = "Year above 50%")
+      addLayersControl(overlayGroups = "Years above 50%")
 ```
 
 ```{r Historical patches data}

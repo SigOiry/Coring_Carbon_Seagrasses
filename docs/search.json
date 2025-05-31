@@ -4,40 +4,54 @@
     "href": "index.html",
     "title": "Where to perform the coring in each sites ?",
     "section": "",
-    "text": "Visit the Github repository\n\n\nThis website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.\nIt gathers analysis done on two sites, Cadiz Bay in Spain ain a nd Bourgneuf Bay in France.\n\n\n\n\nMap of study sites, where coring will be perform in the frame of the Rewrite Project.\n\n\n\nMethodology"
+    "text": "Visit the Github repository\nThis website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.\nIt gathers analysis done on two sites, Cadiz Bay in Spain ain a nd Bourgneuf Bay in France.\nMap of study sites, where coring will be perform in the frame of the Rewrite Project."
+  },
+  {
+    "objectID": "index.html#images-downloading-and-preprocessing",
+    "href": "index.html#images-downloading-and-preprocessing",
+    "title": "Where to perform the coring in each sites ?",
+    "section": "Images Downloading and preprocessing",
+    "text": "Images Downloading and preprocessing\nFor Landsat and SPOT imagery, we refer to the methodology described by Zoffoli et al. (2021).\nSentinel-2 images were downloaded from the ESA Copernicus plateform. For each study site, images were manually inspected to ensure they were cloud-free and acquired during low tide conditions. One image per year was selected, preferably around the date of maximum meadow extent as reported by Davies et al. (2024). To minimize interannual variability, images from the same Sentinel-2 tile were selected for each site. All images selected were pre-processed using baseline version 4.00 or higher. Consequently, 1000 was subtracted from the raw reflectance values of each band to obtain usable surface reflectance values (More info)."
+  },
+  {
+    "objectID": "index.html#images-processing",
+    "href": "index.html#images-processing",
+    "title": "Where to perform the coring in each sites ?",
+    "section": "Images processing",
+    "text": "Images processing\nAll image processing was performed in R, using the terra and tidyverse packages.Maps were generated using the leaflet package.\n\nSeagrass Percent Cover\nThe methodology applied in this study is adapted from Zoffoli et al. (2021).\nSeagrass Percentage Cover (SPC) was derived from the NDVI using the equation established by Zoffoli et al. (2020):\n\\[\nSPC = 172.06 * NDVI - 22.18\n\\]\nPixels with SPC values below 20% were excluded from the analysis, due to the high risk of misclassification with other vegetation types. After applying the transformation, pixels with exceptionally high NDVI occasionally resulted in SPC values exceeding 100%. These were capped at 100%.\n\n\nHistorical seagrass patches of the meadow\nTo identify consistent high-coverage areas within the meadow, we calculated the number of consecutive years—starting from 2024—in which each pixel exhibited an SPC above 50%. For example, a value of 0 indicates that in 2024 the SPC was below 50%, while a value of 5 means that SPC exceeded 50% every year since 2019 (i.e., 2024 − 5), but not in 2018.\n\n\nYear of the maximum of cover\nFor each pixel, the year corresponding to its maximum SPC value during the time series was identified and recorded.\n\n\nRate of decline since the date of maximum\nStarting from the year of maximum SPC, a linear regression was fitted for each pixel to model SPC change over time. The slope of the regression line, when statistically significant (p-value &lt; 0.05), was assigned as the pixel’s rate of decline (expressed as percent cover change per year)."
   },
   {
     "objectID": "Cadiz_Bay.html",
     "href": "Cadiz_Bay.html",
-    "title": "Bourgneuf Bay",
+    "title": "Cadiz Bay",
     "section": "",
-    "text": "Cádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of Zostera noltei and Zostera marina. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in Figure 1, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area.\nFigure 1: Intertidal Mask of Cadiz Bay\nFor this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (Table 1). This work was published by Zoffoli et al. (2021). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see Methodology).\nTable 1\n\n\n\nDateCapteurDateCapteurDateCapteurnovembre 08, 2017Sentinel-2novembre 17, 2020Sentinel-2novembre 17, 2023Sentinel-2novembre 28, 2018Sentinel-2novembre 10, 2021Sentinel-2octobre 22, 2024Sentinel-2novembre 18, 2019Sentinel-2octobre 13, 2022Sentinel-2\nList of Satellite images used to follow the meadows in Cadiz Bay"
+    "text": "Cádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of Zostera noltei and Zostera marina. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in Figure 1, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. Saltmarsh areas are not concidered for this study and have therefore been removed from the mask.\nFigure 1: Intertidal Mask of Cadiz Bay\nFor this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (Table 1). This work was published by Zoffoli et al. (2021). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see Methodology).\nTable 1\n\n\n\nDateCapteurDateCapteurDateCapteurnovembre 08, 2017Sentinel-2novembre 17, 2020Sentinel-2novembre 17, 2023Sentinel-2novembre 28, 2018Sentinel-2novembre 10, 2021Sentinel-2octobre 22, 2024Sentinel-2novembre 18, 2019Sentinel-2octobre 13, 2022Sentinel-2\nList of Satellite images used to follow the meadows in Cadiz Bay"
   },
   {
     "objectID": "Cadiz_Bay.html#seagrass-percent-cover-time-series",
     "href": "Cadiz_Bay.html#seagrass-percent-cover-time-series",
-    "title": "Bourgneuf Bay",
+    "title": "Cadiz Bay",
     "section": "Seagrass Percent Cover time series",
     "text": "Seagrass Percent Cover time series\n\n\n\n\n\n\n\n\nFigure 2: Seagrass Cover in Percent over the years of the meadow of Cadiz Bay. Only pixels with an SPC above 20 % are displayed.\n\n\n\n\n\nFigure 2 is show the evolution of the Seagrass Cover over time, since 20175. The minimum density was recorded in 2018 with 62% of average cover, while the maximum density has been recorded in 2021 with 83% of average cover."
   },
   {
     "objectID": "Cadiz_Bay.html#historical-seagrass-patches-of-the-meadow",
     "href": "Cadiz_Bay.html#historical-seagrass-patches-of-the-meadow",
-    "title": "Bourgneuf Bay",
+    "title": "Cadiz Bay",
     "section": "Historical seagrass patches of the meadow",
     "text": "Historical seagrass patches of the meadow\n\n\n\n\n\n\n\n\nFigure 3: Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.\n\n\n\n\nFigure 3 shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The inner part of the meadows has shown an SPC higher then 50% every years since the start of the time serie in 2017. The upper part of the meadows, toward the shore seems to be more recent."
   },
   {
     "objectID": "Cadiz_Bay.html#year-of-the-maximum-of-cover",
     "href": "Cadiz_Bay.html#year-of-the-maximum-of-cover",
-    "title": "Bourgneuf Bay",
+    "title": "Cadiz Bay",
     "section": "Year of the maximum of cover",
     "text": "Year of the maximum of cover\n\n\n\n\n\n\n\n\nFigure 4: Map of the year of maximum cover of the meadow\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: Area of the meadow reaching its maximum cover value ever for each year.\n\n\n\n\n\nFigure 4 shows, for each pixel, the year in which it reached its maximum Seagrass Percentage Cover (SPC). This same information is presented in Figure 5 as a histogram, illustrating, for each year, the total area of the meadow that attained its highest recorded SPC value. In 2017, approximately 20 hectares of the study site exhibited their highest SPC on record. These areas correspond to the red pixels in Figure 4 and are located in the lowest part of the intertidal zone, where the meadow is almost always submerged. It is possible that the tidal conditions in 2017 included the lowest tide of the entire time series, allowing these typically submerged areas to emerge, whereas in other years, tides may not have been low enough to expose them. In 2021, nearly 50 hectares of the meadow reached their maximum SPC value, represented by the green pixels in Figure 4. These pixels are located in the inner part of the meadow."
   },
   {
     "objectID": "Cadiz_Bay.html#rate-of-decline-since-the-date-of-maximum",
     "href": "Cadiz_Bay.html#rate-of-decline-since-the-date-of-maximum",
-    "title": "Bourgneuf Bay",
+    "title": "Cadiz Bay",
     "section": "Rate of decline since the date of maximum",
     "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing 8.39% of its seagrass cover per year since reaching its maximum."
   },

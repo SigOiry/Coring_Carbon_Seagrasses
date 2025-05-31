@@ -112,7 +112,7 @@ leaflet() %>%
 
 ```
 
-For this site, a time series combining images from the Landsat, SPOT, and Sentinel-2 missions has been used to monitor the seagrass meadow since 1985 (@tbl-images_BB). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](index.html#sec-Methodology)).
+For this site, a time series combining images from the Landsat, SPOT, and Sentinel-2 missions has been used to monitor the seagrass meadow since 1985 (@tbl-images_BB). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](https://sigoiry.github.io/Coring_Carbon_Seagrasses/#sec-Methodology)).
 
 ```{r table Images_BB}
 #| label: tbl-images_BB
@@ -336,6 +336,7 @@ nlayers <- ncol(m)
 res_vec <- integer(ncell)
 
 # 9. Loop over every pixel (cell)
+# 9. Loop over every pixel (cell)
 for (i in seq_len(ncell)) {
   v <- m[i, ]
   
@@ -348,7 +349,7 @@ for (i in seq_len(ncell)) {
     
     if (length(idxs_false) == 0) {
       # never dropped ≤ X in the record
-      res_vec[i] <- NA_integer_
+      res_vec[i] <- ncol(v)-2
     } else {
       # most recent year it was ≤ X
       last_false <- max(idxs_false)
@@ -641,12 +642,12 @@ leaflet() %>%
     # map    = .,
     x = r_above50[[1]],
     project = TRUE,
-    layerId= "Year above 50%",
+    layerId= "Years above 50%",
     type   = "mousemove",
     digits = 0,
     prefix = ""
   )%>%
-      addLayersControl(overlayGroups = "Year above 50%")
+      addLayersControl(overlayGroups = "Years above 50%")
 ```
 
 ```{r Historical patches data}
