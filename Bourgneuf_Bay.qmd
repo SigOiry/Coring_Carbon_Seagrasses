@@ -4,6 +4,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+<div style="text-align: center; margin-top: 20px;">
+  <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses', '_blank');" 
+          style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Download the Qgis project of Bourgneuf Bay
+  </button>
+</div>
 
 ```{r update gitignore}
 #| cache: false
@@ -108,7 +114,7 @@ leaflet() %>%
 
 ```
 
-For this site, a time series combining images from the Landsat, SPOT, and Sentinel-2 missions has been used to monitor the seagrass meadow since 1985 (@tbl-images_BB). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](index.html#sec-Methodology)). 
+For this site, a time series combining images from the Landsat, SPOT, and Sentinel-2 missions has been used to monitor the seagrass meadow since 1985 (@tbl-images_BB). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](index.html#sec-Methodology)).
 
 ```{r leafletmap Intertidal_BB}
 #| label: tbl-images_BB
@@ -676,7 +682,7 @@ morethan33 <- rast("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif
   reframe(x = mean(x), y = mean(y), n = nrow(.))
 ```
 
-@fig-historical_patches shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. One area of the meadow, covering `r morethan29$n*10*10` m², has sustained an SPC above 50% for the past 29 years. Within this area, 200 m² have maintained an SPC above 50% for over 34 consecutive years without interruption. This patch is centered around the coordinates y= `r coords_4326[2]` and x= `r coords_4326[1]`. 
+@fig-historical_patches shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. One area of the meadow, covering `r morethan29$n*10*10` m², has sustained an SPC above 50% for the past 29 years. Within this area, 200 m² have maintained an SPC above 50% for over 34 consecutive years without interruption. This patch is centered around the coordinates y= `r coords_4326[2]` and x= `r coords_4326[1]`.
 
 ## Year of the maximum of cover
 
@@ -702,7 +708,8 @@ r_years_max <- raster("Data/Bourgneuf_Bay/Output/year_of_maximum.tif")
 # define a color palette function based on the raster’s values
 pal <- colorNumeric(
   palette = RColorBrewer::brewer.pal(11, "Spectral"),
-  domain  = 1985:2024
+  domain  = 1985:2024,
+  na.color = "transparent"
 )
 
 # build the leaflet map
@@ -760,8 +767,7 @@ rast("Data/Bourgneuf_Bay/Output/year_of_maximum.tif")  %>%
 
 ```
 
-@fig-max_year_BB shows, for each pixel, the year when it reached its maximum Seagrass Percentage Cover (SPC). This same information is presented in @fig-Hist_max_BB as a histogram, where the area of meadow reaching its all-time maximum SPC is displayed for each year. Three key periods stand out: 1985–1986, 2002, and 2022. In 1985–1986, more than 15% of the meadow reached its highest SPC values in the time series. These are shown as red pixels in @fig-max_year_BB, typically located along the edges of the meadow. In 2002, 28% of the meadow reached its historical maximum, corresponding to yellow areas in @fig-max_year_BB, where the meadow expanded eastward and westward. Finally, in 2022, 52% of the meadow reached its highest recorded SPC, represented by blue areas in @fig-max_year_BB, mainly located in the central part of the meadow.
-
+@fig-max_year_BB shows, for each pixel, the year when it reached its maximum Seagrass Percentage Cover (SPC). This same information is presented in @fig-Hist_max_BB as a histogram, where the area of meadow reaching its all-time maximum SPC is displayed for each year. Three key periods stand out: 1985--1986, 2002, and 2022. In 1985--1986, more than 15% of the meadow reached its highest SPC values in the time series. These are shown as red pixels in @fig-max_year_BB, typically located along the edges of the meadow. In 2002, 28% of the meadow reached its historical maximum, corresponding to yellow areas in @fig-max_year_BB, where the meadow expanded eastward and westward. Finally, in 2022, 52% of the meadow reached its highest recorded SPC, represented by blue areas in @fig-max_year_BB, mainly located in the central part of the meadow.
 
 ## Rate of decline since the date of maximum
 
@@ -792,7 +798,8 @@ r_decline[r_decline < -25] <- -25
 # define a color palette function based on the raster’s values
 pal <- colorNumeric(
   palette = RColorBrewer::brewer.pal(11, "Spectral"),
-  domain  = 1:-26
+  domain  = 1:-26,
+  na.color = "transparent"
 )
 
 # build the leaflet map
@@ -827,4 +834,4 @@ leaflet() %>%
       addLayersControl(overlayGroups = "Rate of Decline")
 ```
 
-@fig-decline_BB shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_BB. On average, the meadow has been losing r abs(round(data_decline$mean, 2))% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow—likely where fishermen regularly carry out clam fishing activities—are experiencing much sharper declines, with rates reaching up to 25% per year.
+@fig-decline_BB shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_BB. On average, the meadow has been losing `r abs(round(data_decline$mean, 2))`% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow---likely where fishermen regularly carry out clam fishing activities---are experiencing much sharper declines, with rates reaching up to 25% per year.

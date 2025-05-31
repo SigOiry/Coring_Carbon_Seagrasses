@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Where to perform the coring in each sites ?",
     "section": "",
-    "text": "This website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.\nIt gathers analysis done on two sites, Cadiz Bay in Spain and Bourgneuf Bay in France.\n\n\n\n\nMap of study sites, where coring will be perform in the frame of the Rewrite Project.\n\n\n\nMethodology"
+    "text": "Visit the Github repository \n\nThis website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.\nIt gathers analysis done on two sites, Cadiz Bay in Spain ain a nd Bourgneuf Bay in France.\n\n\n\n\nMap of study sites, where coring will be perform in the frame of the Rewrite Project.\n\n\n\nMethodology"
   },
   {
     "objectID": "Bourgneuf_Bay.html",
@@ -25,7 +25,7 @@
     "href": "Bourgneuf_Bay.html#seagrass-percent-cover-time-series",
     "title": "Bourgneuf Bay",
     "section": "Seagrass Percent Cover time series",
-    "text": "Seagrass Percent Cover time series\n\n\n\n\n\n\n\n\nFigure 2: Seagrass Cover in Percent over the years of the meadow of Bourgneuf Bay. Only pixels with an SPC above 20 % are displayed.\n\n\n\n\n\n\nFigure 2 is show the evolution of the Seagrass Cover over time, since 1985. The minimum density was recorded in 1988 with 28% of average cover, while the maximum density has been recorded in 2022 with 59% of average cover."
+    "text": "Seagrass Percent Cover time series\n\n\n\n\n\n\n\n\nFigure 2: Seagrass Cover in Percent over the years of the meadow of Bourgneuf Bay. Only pixels with an SPC above 20 % are displayed.\n\n\n\n\n\nFigure 2 is show the evolution of the Seagrass Cover over time, since 1985. The minimum density was recorded in 1988 with 28% of average cover, while the maximum density has been recorded in 2022 with 59% of average cover."
   },
   {
     "objectID": "Bourgneuf_Bay.html#historical-patches-of-seagrasses",
@@ -46,13 +46,13 @@
     "href": "Bourgneuf_Bay.html#historical-seagrass-patches-of-the-meadow",
     "title": "Bourgneuf Bay",
     "section": "Historical seagrass patches of the meadow",
-    "text": "Historical seagrass patches of the meadow\n\n\n\n\n\n\n\n\nFigure 3: Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.\n\n\n\n\nFigure 3 shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50%. One area of the meadow, covering 3100 m², has sustained an SPC above 50% for the past 29 years. Within this area, 200 m² have maintained an SPC above 50% for over 34 consecutive years without interruption. This patch is centered around the coordinates y= 46.9593738 and x= -2.1710815."
+    "text": "Historical seagrass patches of the meadow\n\n\n\n\n\n\n\n\nFigure 3: Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.\n\n\n\n\nFigure 3 shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. One area of the meadow, covering 3100 m², has sustained an SPC above 50% for the past 29 years. Within this area, 200 m² have maintained an SPC above 50% for over 34 consecutive years without interruption. This patch is centered around the coordinates y= 46.9593738 and x= -2.1710815."
   },
   {
     "objectID": "Bourgneuf_Bay.html#rate-of-decline-since-the-date-of-maximum",
     "href": "Bourgneuf_Bay.html#rate-of-decline-since-the-date-of-maximum",
     "title": "Bourgneuf Bay",
     "section": "Rate of decline since the date of maximum",
-    "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing r abs(round(data_decline$mean, 2))% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow—likely where fishermen regularly carry out clam fishing activities—are experiencing much sharper declines, with rates reaching up to 25% per year."
+    "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing 1.78% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow—likely where fishermen regularly carry out clam fishing activities—are experiencing much sharper declines, with rates reaching up to 25% per year."
   }
 ]

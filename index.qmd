@@ -4,9 +4,16 @@ editor_options:
   chunk_output_type: console
 ---
 
+<div style="text-align: center; margin-top: 20px;">
+  <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses', '_blank');" 
+          style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Visit the Github repository
+  </button>
+</div>
+
 This website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.
 
-It gathers analysis done on two sites, Cadiz Bay in Spain and Bourgneuf Bay in France.
+It gathers analysis done on two sites, Cadiz Bay in Spain ain a nd Bourgneuf Bay in France.
 
 ```{r leafletmap}
 #| fig-cap: Map of study sites, where coring will be perform in the frame of the Rewrite Project. 
@@ -88,4 +95,3 @@ m %>% onRender(
 ```
 
 # Methodology {#sec-Methodology}
-
