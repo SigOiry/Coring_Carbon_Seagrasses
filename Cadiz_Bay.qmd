@@ -4,10 +4,12 @@ editor_options:
   chunk_output_type: console
 ---
 
-::: {style="text-align: center; margin-top: 20px;"}
-<button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Bourgneuf_Bay.zip', '_blank');" 
-          style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"> Download the Qgis project of Bourgneuf Bay </button>
-:::
+<!-- <div style="text-align: center; margin-top: 20px;"> -->
+<!--   <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Bourgneuf_Bay.zip', '_blank');"  -->
+<!--           style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"> -->
+<!--     Download the Qgis project of Bourgneuf Bay -->
+<!--   </button> -->
+<!-- </div> -->
 
 ```{r update gitignore}
 #| cache: false
@@ -51,11 +53,11 @@ if (length(large_files) > 0) {
 }
 ```
 
-Bourgneuf Bay is a broad, shallow coastal bay situated on the French Atlantic coast, between the island of Noirmoutier and the mainland. Bordered by salt marshes, oyster farms, and mudflats, it is characterized by its extensive intertidal zones. The bay hosts large seagrass meadows, mainly composed of *Zostera noltei*, which cover wide areas of the seabed. These meadows are especially visible at low tide and stretch across the southern and western parts of the bay. As shown in @fig-map_IZ_BB, the area considered in this study spans more than 23 km².
+Cádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of *Zostera noltei* and *Zostera marina*. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in @fig-map_IZ_CA, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. 
 
 ```{r leafletmap Intertidal_BB}
-#| label: fig-map_IZ_BB
-#| fig-cap: Intertidal Mask of Bourgneuf Bay
+#| label: fig-map_IZ_CA
+#| fig-cap: Intertidal Mask of Cadiz Bay
 #| echo: false
 #| error: false
 #| message: false
@@ -69,7 +71,7 @@ library(units)
 
 
 # 1) Read your polygon shapefile
-shp_path <- "Data/Bourgneuf_Bay/SHP/mask_meadow.shp"
+shp_path <- "Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp"
 polygons <- st_read(shp_path, quiet = TRUE)
 
 
@@ -93,8 +95,8 @@ leaflet() %>%
   
   # Zoom to your data’s extent
   fitBounds(
-    lng1 = bb["xmin"][[1]], lat1 = bb["ymin"][[1]],
-    lng2 = bb["xmax"][[1]], lat2 = bb["ymax"][[1]]
+    lng1 = bb["xmin"][[1]]*0.9999, lat1 = bb["ymin"][[1]]*0.9995,
+    lng2 = bb["xmax"][[1]]*1.0009, lat2 = bb["ymax"][[1]]*1.0009
   ) %>%
   
   # Overlay the actual polygons, faded
@@ -112,11 +114,11 @@ leaflet() %>%
 
 ```
 
-For this site, a time series combining images from the Landsat, SPOT, and Sentinel-2 missions has been used to monitor the seagrass meadow since 1985 (@tbl-images_BB). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](index.html#sec-Methodology)).
+For this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (@tbl-images_CA). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](index.html#sec-Methodology)).
 
-```{r table Images_BB}
-#| label: tbl-images_BB
-#| fig-cap: List of Satellite images used to follow the meadows in Bourngeuf Bay
+```{r Table Images_CA}
+#| label: tbl-images_CA
+#| fig-cap: List of Satellite images used to follow the meadows in Cadiz Bay
 #| echo: false
 #| error: false
 #| message: false
@@ -127,82 +129,17 @@ For this site, a time series combining images from the Landsat, SPOT, and Sentin
 library(flextable)
 library(officer)
 library(tidyverse)
-
-year_to_remove <- c(1989,1992,1994,1999,2000,2007,2014)
-
 # example data
 sat_images <- data.frame(
-  Date    = as.Date(c("1985-09-13", 
-                      "1986-10-02", 
-                      "1987-07-26",
-                      "1988-10-15",
-                      "1989-09-01",
-                      "1990-09-04",
-                      "1991-09-28",
-                      "1992-08-15",
-                      "1993-09-20",
-                      "1994-08-05",
-                      "1995-10-11",
-                      "1997-09-07",
-                      "1998-09-21",
-                      "1999-07-02",
-                      "2000-07-30",
-                      "2001-09-02",
-                      "2002-09-24",
-                      "2003-09-26",
-                      "2004-09-17",
-                      "2005-09-18",
-                      "2006-09-23",
-                      "2007-07-17",
-                      "2008-09-28",
-                      "2009-09-08",
-                      "2010-09-12",
-                      "2011-10-02",
-                      "2012-09-28",
-                      "2013-10-05",
-                      "2014-10-09",
-                      "2015-09-30",
-                      "2016-08-22",
-                      "2017-10-06",
-                      "2018-09-14",
-                      "2019-09-16",
-                      "2020-09-05",
-                      "2021-09-23",
-                      "2022-08-11",
-                      "2023-09-03",
-                      "2024-09-17")),
-  Sensor  = c("Landsat", 
-              "Landsat", 
-              "Landsat",
-              "SPOT",
-              "Landsat",
-              "Landsat",
-              "SPOT",
-              "Landsat",
-              "SPOT",
-              "Landsat",
-              "Landsat",
-              "SPOT",
-              "SPOT",
-              "Landsat",
-              "SPOT",
-              "Landsat",
-              "SPOT",
-              "SPOT",
-              "Landsat",
-              "SPOT",
-              "Landsat",
-              "SPOT",
-              "Landsat",
-              "SPOT",
-              "SPOT",
-              "SPOT",
-              "SPOT",
-              "SPOT",
-              "SPOT",
-              "Sentinel-2",
-              "Sentinel-2",
-              "Sentinel-2",
+  Date    = as.Date(c("2017-11-08",
+                      "2018-11-28",
+                      "2019-11-18",
+                      "2020-11-17",
+                      "2021-11-10",
+                      "2022-10-13",
+                      "2023-11-17",
+                      "2024-10-22")),
+  Sensor  = c("Sentinel-2",
               "Sentinel-2",
               "Sentinel-2",
               "Sentinel-2",
@@ -214,8 +151,7 @@ sat_images <- data.frame(
 ) %>% 
   mutate(year = as.character(Date) %>% 
            substr(.,1,4) %>% 
-           as.numeric()) %>% 
-  dplyr::filter(!(year %in% year_to_remove))
+           as.numeric()) 
 
 # # build flextable
 # ft <- flextable(sat_images) %>%
@@ -285,7 +221,7 @@ ft <- flextable(combined) %>%
 ft
 ```
 
-```{r Processing_BB}
+```{r Processing_CA}
 #| echo: false
 #| eval: false
 #| warning: false
@@ -295,8 +231,47 @@ library(tidyverse)
 library(tidyterra)
 library(leaflet)
 library(stars)  
+
+
+
+It_mask <- "Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp" %>% 
+  vect()
+
+SAFE_list <- list.dirs("Data/SAFE/", recursive = F, full.names = T) %>% 
+  as_tibble() %>% 
+  rename(path = "value") %>% 
+  mutate(img_name = gsub(".*/","",path),
+         tile = substr(img_name, 40,44),
+         Date = substr(img_name, 12,19))  %>% 
+  dplyr::filter(tile == "29SQA")
+
+for (i in 1:nrow(SAFE_list)) {
+  B4 <- list.files(SAFE_list$path[i], pattern = "_B04_10m.jp2", recursive = T, full.names = T) %>% 
+    rast()-1000
+  
+  B8 <- list.files(SAFE_list$path[i], pattern = "_B08_10m.jp2", recursive = T, full.names = T) %>% 
+    rast()-1000
+
+  stk <- c(B4,B8) %>% 
+    crop(It_mask, mask = T)
+  
+  NDVI <- (stk[[2]]-stk[[1]])/(stk[[2]]+stk[[1]])
+  
+  writeRaster(NDVI,paste0("Data/Cadiz_Bay/NDVI/",SAFE_list$Date[i],"_NDVI.tif"), overwrite=T)
+  
+  SPC <- 172.06*NDVI-22.18
+  values(SPC)[values(SPC)<=20] <- NA
+  values(SPC)[values(SPC)>100] <- 100
+
+  plot(SPC)
+  
+  writeRaster(SPC,paste0("Data/Cadiz_Bay/SPC/",SAFE_list$Date[i],"_SPC.tif"), overwrite=T)
+
+    
+}
+
 ## 1. List your annual SPC TIFFs
-files <- list.files("Data/Bourgneuf_Bay/SPC", "\\.tif$", full.names = TRUE)
+files <- list.files("Data/Cadiz_Bay/SPC", "\\.tif$", full.names = TRUE)
 
 # 2. Extract the year (YYYY) from each filename
 years <- as.integer(
@@ -317,6 +292,12 @@ years <- years[ord]
 # 4. Load the stack and name each layer by its year
 r <- rast(files)
 names(r) <- years
+
+# Identify cells where any layer is NA
+na_mask <- app(r, fun = function(x) any(is.na(x)))
+
+# Apply the mask to set NA across all layers
+r[na_mask == 1] <- NA
 
 # 5. Choose your threshold
 X <- 50
@@ -348,7 +329,7 @@ for (i in seq_len(ncell)) {
     
     if (length(idxs_false) == 0) {
       # never dropped ≤ X in the record
-      res_vec[i] <- NA_integer_
+      res_vec[i] <- ncol(v)-2
     } else {
       # most recent year it was ≤ X
       last_false <- max(idxs_false)
@@ -360,17 +341,17 @@ for (i in seq_len(ncell)) {
 
 r_df$Years_since_low_density <- res_vec
 
-r_out <- rast(r_df, type = "xyz", crs = "EPSG:2154")
+r_out <- rast(r_df, type = "xyz", crs = "EPSG:32629")
 
-
+plot(r_out$Years_since_low_density)
 ggplot()+
-  geom_spatraster(data = r_out, aes(fill = Years_since_low_density))+
-  scale_fill_hypso_c(palette = "wiki-schwarzwald-cont")
+  geom_spatraster(data = r_out, aes(fill = Years_since_low_density))
+  # scale_fill_hypso_c(palette = "wiki-schwarzwald-cont")
 
 
 writeRaster(
   r_out$Years_since_low_density,
-  filename = "Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif",
+  filename = "Data/Cadiz_Bay/Output/years_to_below_threshold_50_CA.tif",
   overwrite = TRUE
 )
 
@@ -383,7 +364,7 @@ message("Done: each pixel shows how many years back to find a value ≤ ", X)
 library(terra)
 
 # 1. List your annual rasters and extract the year from each filename
-files <- list.files("Data/Bourgneuf_Bay/SPC", "\\.tif$", full.names = TRUE)
+files <- list.files("Data/Cadiz_Bay/SPC", "\\.tif$", full.names = TRUE)
 years <- as.integer(
   format(
     as.Date(
@@ -402,6 +383,12 @@ years <- years[ord]
 # 3. Load as SpatRaster and name layers by year
 r <- rast(files)
 names(r) <- years
+
+# Identify cells where any layer is NA
+na_mask <- app(r, fun = function(x) any(is.na(x)))
+
+# Apply the mask to set NA across all layers
+r[na_mask == 1] <- NA
 
 
 # 4. Turn the multi‐layer raster into a matrix:
@@ -468,14 +455,14 @@ r_df <- r %>%
          slope_since_maximum = slope_vec)
 
 
-r_out <- rast(r_df, type = "xyz", crs = "EPSG:2154")
+r_out <- rast(r_df, type = "xyz", crs = "EPSG:32629")
 
 # 8. Write out the results
 writeRaster(r_out$year_of_maximum,
-            "Data/Bourgneuf_Bay/Output/year_of_maximum.tif",
+            "Data/Cadiz_Bay/Output/year_of_maximum_CA.tif",
             overwrite = TRUE)
 writeRaster(r_out$slope_since_maximum,
-            "Data/Bourgneuf_Bay/Output/slope_since_maximum.tif",
+            "Data/Cadiz_Bay/Output/slope_since_maximum_CA.tif",
             overwrite = TRUE)
 
 message("Done: ‘year_of_maximum.tif’ and ‘slope_since_maximum.tif’ written.")
@@ -485,7 +472,7 @@ message("Done: ‘year_of_maximum.tif’ and ‘slope_since_maximum.tif’ writt
 
 ## Seagrass Percent Cover time series
 
-```{r DATA BB}
+```{r DATA CA}
 #| cache: false
 #| echo: false
 #| warning: false
@@ -494,7 +481,7 @@ library(Utilities.Package)
 library(gganimate)
 library(terra)
 ## 1. List your annual SPC TIFFs
-files <- list.files("Data/Bourgneuf_Bay/SPC", "\\.tif$", full.names = TRUE)
+files <- list.files("Data/Cadiz_Bay/SPC", "\\.tif$", full.names = TRUE)
 
 # 2. Extract the year (YYYY) from each filename
 years <- as.integer(
@@ -521,12 +508,12 @@ df_r <- as.data.frame(r, xy = T) %>%
   pivot_longer(-c(x,y), names_to = "Years",values_to = "Values")
 
 
-min_SPC <- df_r %>% 
+min_SPC_CA <- df_r %>% 
   group_by(Years) %>% 
   reframe(mean = mean(Values, na.rm = T)) %>% 
   dplyr::filter(mean == min(mean))
 
-max_SPC <- df_r %>% 
+max_SPC_CA <- df_r %>% 
   group_by(Years) %>% 
   reframe(mean = mean(Values, na.rm = T)) %>% 
   dplyr::filter(mean == max(mean))
@@ -534,10 +521,14 @@ max_SPC <- df_r %>%
 
 ```
 
-```{r GIF_SPC_BB}
+```{r GIF_SPC_CA}
 #| echo: false
 #| eval: false
 #| warning: false
+
+library(Utilities.Package)
+library(gganimate)
+
 animate_SPC <- df_r %>% 
   mutate(group_animate = Years) %>%
   # dplyr::filter(Years == 2024) %>%
@@ -546,13 +537,13 @@ animate_SPC <- df_r %>%
   scale_fill_Bede(name = "Seagrass Cover (%)","mixed", discrete =F, na.value = "grey", limits = c(20, 100)) +
   coord_equal()+
   # labs(title = "Year: {closest_state}") +
-  geom_text(x = 308000, y = 6666500, aes(label = Years, group = group_animate),
+  geom_text(x = 752000, y = 4041000, aes(label = Years, group = group_animate),
     inherit.aes = FALSE,
     size = 10)+
   theme_Bede_Map()+
     # ggtitle(paste("Zoom jusqu’à", round(x_max), "nm")) +
     theme(
-      legend.position = c(0.5, 0.5),
+      legend.position = c(0.45, 0.92),
       legend.text = element_text(size = 12),
       axis.text.x = element_text(size = 12),
       axis.text.y = element_text(size = 12)
@@ -563,13 +554,13 @@ animate_SPC <- df_r %>%
   #   ease_aes("sine-in-out")
 
 
-rendered_SPC <- gganimate::animate(animate_SPC, duration = 33, fps = 1, 
+rendered_SPC <- gganimate::animate(animate_SPC, duration = length(unique(df_r$Years)), fps = 1, 
   width      = 800,   
   height     = 800,   
   units      = "px", res = 100, end_pause = 1, rewind = F, renderer = gifski_renderer(loop = T))
 
 
-anim_save("Plots/Animation_SPC_BB.gif", animation = rendered_SPC)
+anim_save("Plots/Animation_SPC_CA.gif", animation = rendered_SPC)
 
 
   
@@ -580,14 +571,14 @@ anim_save("Plots/Animation_SPC_BB.gif", animation = rendered_SPC)
 #| echo: false
 #| warning: false
 #| fig-cap: >
-#|   Seagrass Cover in Percent over the years of the meadow of Bourgneuf Bay. Only pixels with an SPC above 20 % are displayed.  
-#| label: fig-SPC_GIF
+#|   Seagrass Cover in Percent over the years of the meadow of Cadiz Bay. Only pixels with an SPC above 20 % are displayed.  
+#| label: fig-SPC_GIF_CA
 #| out-width: "100%"
 
-knitr::include_graphics("Plots/Animation_SPC_BB.gif")
+knitr::include_graphics("Plots/Animation_SPC_CA.gif")
 ```
 
-@fig-SPC_GIF is show the evolution of the Seagrass Cover over time, since 1985. The minimum density was recorded in `r min_SPC$Years` with `r round(min_SPC$mean)`% of average cover, while the maximum density has been recorded in `r max_SPC$Years` with `r round(max_SPC$mean,0)`% of average cover.
+@fig-SPC_GIF_CA is show the evolution of the Seagrass Cover over time, since 20175. The minimum density was recorded in `r min_SPC_CA$Years` with `r round(min_SPC_CA$mean)`% of average cover, while the maximum density has been recorded in `r max_SPC_CA$Years` with `r round(max_SPC_CA$mean,0)`% of average cover.
 
 ## Historical seagrass patches of the meadow
 
@@ -597,7 +588,7 @@ knitr::include_graphics("Plots/Animation_SPC_BB.gif")
 #| warning: false
 #| fig-cap: >
 #|   Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.
-#| label: fig-historical_patches
+#| label: fig-historical_patches_CA
 #| out-width: "100%"
 
 library(raster)
@@ -608,12 +599,14 @@ library(viridis)
 # load or create your raster
 # r <- raster("path/to/your.tif")
 # for illustration, make a small test raster:
-r_above50 <- raster("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif")  
+r_above50 <- raster("Data/Cadiz_Bay/Output/years_to_below_threshold_50_CA.tif")
+
+
 
 # define a color palette function based on the raster’s values
 pal <- colorNumeric(
   palette = viridis(100), 
-  domain  = values(r_above50),
+  domain  = 0:8,
   na.color = "transparent"
 )
 
@@ -664,7 +657,7 @@ morethan29 <- rast("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif
                 x>306900) %>% 
   reframe(x = mean(x), y = mean(y), n = nrow(.))
 
-pt_32630 <- st_sfc(st_point(c(morethan29$x, morethan29$y)), crs = 2154)
+pt_32630 <- st_sfc(st_point(c(morethan29$x, morethan29$y)), crs = 32629)
 # transform to EPSG:4326 (WGS84 lon/lat)
 pt_4326 <- st_transform(pt_32630, 4326)
 
@@ -680,17 +673,17 @@ morethan33 <- rast("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif
   reframe(x = mean(x), y = mean(y), n = nrow(.))
 ```
 
-@fig-historical_patches shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. One area of the meadow, covering `r morethan29$n*10*10` m², has sustained an SPC above 50% for the past 29 years. Within this area, 200 m² have maintained an SPC above 50% for over 34 consecutive years without interruption. This patch is centered around the coordinates y= `r coords_4326[2]` and x= `r coords_4326[1]`.
+@fig-historical_patches_CA shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The inner part of the meadows has shown an SPC higher then 50% every years since the start of the time serie in 2017. The upper part of the meadows, toward the shore seems to be more recent. 
 
 ## Year of the maximum of cover
 
-```{r Year of the Max}
+```{r Year of the MaxCA}
 #| cache: false
 #| echo: false
 #| warning: false
 #| fig-cap: >
 #|   Map of the year of maximum cover of the meadow  
-#| label: fig-max_year_BB
+#| label: fig-max_year_CA
 #| out-width: "100%"
 
 library(raster)
@@ -701,12 +694,12 @@ library(viridis)
 # load or create your raster
 # r <- raster("path/to/your.tif")
 # for illustration, make a small test raster:
-r_years_max <- raster("Data/Bourgneuf_Bay/Output/year_of_maximum.tif")  
+r_years_max <- raster("Data/Cadiz_Bay/Output/year_of_maximum_CA.tif")  
 
 # define a color palette function based on the raster’s values
 pal <- colorNumeric(
-  palette = RColorBrewer::brewer.pal(11, "Spectral"),
-  domain  = 1985:2024,
+  palette = RColorBrewer::brewer.pal(length(2017:2024), "Spectral"),
+  domain  = 2017:2024,
   na.color = "transparent"
 )
 
@@ -742,8 +735,8 @@ leaflet() %>%
       addLayersControl(overlayGroups = "Year of the Maximum")
 ```
 
-```{r histogram Year of the max}
-#| label: fig-Hist_max_BB
+```{r histogram Year of the maxCA}
+#| label: fig-Hist_max_CA
 #| fig-cap: Area of the meadow reaching its maximum cover value ever for each year. 
 #| echo: false
 #| error: false
@@ -754,7 +747,7 @@ leaflet() %>%
 library(terra)
 library(tidyverse)
 
-rast("Data/Bourgneuf_Bay/Output/year_of_maximum.tif")  %>% 
+rast("Data/Cadiz_Bay/Output/year_of_maximum_CA.tif")  %>% 
   as.data.frame() %>% 
   group_by(year_of_maximum) %>% 
   reframe(area = (n()*10*10)*0.0001) %>% 
@@ -765,17 +758,17 @@ rast("Data/Bourgneuf_Bay/Output/year_of_maximum.tif")  %>%
 
 ```
 
-@fig-max_year_BB shows, for each pixel, the year when it reached its maximum Seagrass Percentage Cover (SPC). This same information is presented in @fig-Hist_max_BB as a histogram, where the area of meadow reaching its all-time maximum SPC is displayed for each year. Three key periods stand out: 1985--1986, 2002, and 2022. In 1985--1986, more than 15% of the meadow reached its highest SPC values in the time series. These are shown as red pixels in @fig-max_year_BB, typically located along the edges of the meadow. In 2002, 28% of the meadow reached its historical maximum, corresponding to yellow areas in @fig-max_year_BB, where the meadow expanded eastward and westward. Finally, in 2022, 52% of the meadow reached its highest recorded SPC, represented by blue areas in @fig-max_year_BB, mainly located in the central part of the meadow.
+@fig-max_year_CA shows, for each pixel, the year in which it reached its maximum Seagrass Percentage Cover (SPC). This same information is presented in @fig-Hist_max_CA as a histogram, illustrating, for each year, the total area of the meadow that attained its highest recorded SPC value. In 2017, approximately 20 hectares of the study site exhibited their highest SPC on record. These areas correspond to the red pixels in @fig-max_year_CA and are located in the lowest part of the intertidal zone, where the meadow is almost always submerged. It is possible that the tidal conditions in 2017 included the lowest tide of the entire time series, allowing these typically submerged areas to emerge, whereas in other years, tides may not have been low enough to expose them. In 2021, nearly 50 hectares of the meadow reached their maximum SPC value, represented by the green pixels in @fig-max_year_CA. These pixels are located in the inner part of the meadow.
 
 ## Rate of decline since the date of maximum
 
-```{r Year of the Max}
+```{r Year of the MaxCA}
 #| cache: false
 #| echo: false
 #| warning: false
 #| fig-cap: >
-#|  Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in @fig-max_year_BB 
-#| label: fig-decline_BB
+#|  Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in @fig-max_year_CA 
+#| label: fig-decline_CA
 #| out-width: "100%"
 
 library(raster)
@@ -786,13 +779,14 @@ library(viridis)
 # load or create your raster
 # r <- raster("path/to/your.tif")
 # for illustration, make a small test raster:
-r_decline <- raster("Data/Bourgneuf_Bay/Output/slope_since_maximum.tif")
+r_declineCA <- raster("Data/Cadiz_Bay/Output/slope_since_maximum_CA.tif")
+values(r_declineCA)[values(r_declineCA) == 0] <- NA
 
-data_decline <- r_decline %>% 
+data_declineCA <- r_declineCA %>% 
   as.data.frame() %>% 
   reframe(mean = mean(slope_since_maximum, na.rm = T))
 
-r_decline[r_decline < -25] <- -25
+r_declineCA[r_declineCA < -25] <- -25
 # define a color palette function based on the raster’s values
 pal <- colorNumeric(
   palette = RColorBrewer::brewer.pal(11, "Spectral"),
@@ -805,7 +799,7 @@ leaflet() %>%
   addProviderTiles(providers$Esri.WorldImagery) %>%
   # add the raster, assign a layerId so leafem knows which layer to query
   addRasterImage(
-    x       = r_decline[[1]], 
+    x       = r_declineCA[[1]], 
     project = TRUE,
     colors  = pal, 
     opacity = 0.8, 
@@ -815,14 +809,14 @@ leaflet() %>%
   # add a continuous legend
   addLegend(
     pal    = pal, 
-    values = values(r_decline),
+    values = values(r_declineCA),
     title  = "Pixel value",
     position = "bottomright"
   ) %>% 
   # wire up click‐popup: show value with 2 decimals
   addImageQuery(
     # map    = .,
-    x = r_decline[[1]],
+    x = r_declineCA[[1]],
     project = TRUE,
     layerId= "Rate of Decline",
     type   = "mousemove",
@@ -832,4 +826,4 @@ leaflet() %>%
       addLayersControl(overlayGroups = "Rate of Decline")
 ```
 
-@fig-decline_BB shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_BB. On average, the meadow has been losing `r abs(round(data_decline$mean, 2))`% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow---likely where fishermen regularly carry out clam fishing activities---are experiencing much sharper declines, with rates reaching up to 25% per year.
+@fig-decline_CA shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_CA. On average, the meadow has been losing `r abs(round(data_declineCA$mean, 2))`% of its seagrass cover per year since reaching its maximum.

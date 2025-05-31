@@ -4,12 +4,13 @@ editor_options:
   chunk_output_type: console
 ---
 
-<div style="text-align: center; margin-top: 20px;">
-  <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses', '_blank');" 
-          style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-    Visit the Github repository
-  </button>
-</div>
+::: {style="text-align: center; margin-top: 20px;"}
+<button onclick="window.open(&#39;https://github.com/SigOiry/Coring_Carbon_Seagrasses&#39;, &#39;_blank&#39;);" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+
+Visit the Github repository
+
+</button>
+:::
 
 This website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.
 
@@ -33,8 +34,8 @@ coords <- data.frame(
   lat   = c(47.11667, 36.53333),
   lng   = c(-2.15000,  -6.30000),
   label = c("Bourgneuf Bay",    "Cádiz Bay"),
-  url     = c("https://fr.wikipedia.org/wiki/Baie_de_Bourgneuf",
-              "https://en.wikipedia.org/wiki/Bay_of_Cádiz"),
+  url     = c("https://sigoiry.github.io/Coring_Carbon_Seagrasses/Bourgneuf_Bay.html",
+              "https://sigoiry.github.io/Coring_Carbon_Seagrasses/Cadiz_Bay.html"),
   xOffset = c(0,  0),    
   yOffset = c(-30, -30),
   stringsAsFactors = FALSE

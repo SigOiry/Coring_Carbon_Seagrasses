@@ -10,6 +10,8 @@ website:
         text: Home
       - href: Bourgneuf_Bay.qmd
         text: Bourngeuf Bay
+      - href: Cadiz_Bay.qmd
+        text: Cadiz Bay
 format:
   html:
     theme:
