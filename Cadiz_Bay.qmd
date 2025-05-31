@@ -4,17 +4,12 @@ editor_options:
   chunk_output_type: console
 ---
 
-<!-- <div style="text-align: center; margin-top: 20px;"> -->
-
-<!--   <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Bourgneuf_Bay.zip', '_blank');" -->
-
-<!--           style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"> -->
-
-<!--     Download the Qgis project of Bourgneuf Bay -->
-
-<!--   </button> -->
-
-<!-- </div> -->
+<div style="text-align: center; margin-top: 20px;">
+  <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Project_Cadiz.zip', '_blank');"
+          style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Download the Qgis project of Cadiz Bay
+  </button>
+</div>
 
 ```{r update gitignore}
 #| cache: false
