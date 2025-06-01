@@ -599,7 +599,7 @@ library(viridis)
 # load or create your raster
 # r <- raster("path/to/your.tif")
 # for illustration, make a small test raster:
-r_above50 <- raster("Data/Cadiz_Bay/Output/years_to_below_threshold_50_CA.tif")
+r_above50_CA <- raster("Data/Cadiz_Bay/Output/years_to_below_threshold_50_CA.tif")
 
 
 
@@ -615,31 +615,31 @@ leaflet() %>%
   addProviderTiles(providers$Esri.WorldImagery) %>%
   # add the raster, assign a layerId so leafem knows which layer to query
   addRasterImage(
-    x       = r_above50[[1]], 
+    x       = r_above50_CA[[1]], 
     project = TRUE,
     colors  = pal, 
     opacity = 0.8, 
-    layerId = "Years above 50%",
-    group = "Years above 50%"
+    layerId = "Amount of Years SPC higher 50",
+    group = "Amount of Years SPC higher 50"
   ) %>% 
   # add a continuous legend
   addLegend(
     pal    = pal, 
-    values = values(r_above50),
+    values = values(r_above50_CA),
     title  = "Number of Years above 50%",
     position = "bottomright"
   ) %>% 
   # wire up click‐popup: show value with 2 decimals
   addImageQuery(
     # map    = .,
-    x = r_above50[[1]],
+    x = r_above50_CA[[1]],
     project = TRUE,
-    layerId= "Years above 50%",
+    layerId= "Amount of Years SPC higher 50",
     type   = "mousemove",
     digits = 0,
     prefix = ""
   )%>%
-      addLayersControl(overlayGroups = "Years above 50%")
+      addLayersControl(overlayGroups = "Amount of Years SPC higher 50")
 ```
 
 ```{r Historical patches data}
