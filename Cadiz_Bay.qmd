@@ -828,6 +828,74 @@ leaflet() %>%
 
 @fig-decline_CA shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_CA. On average, the meadow has been losing `r abs(round(data_declineCA$mean, 2))`% of its seagrass cover per year since reaching its maximum.
 
+## Amount of time above 50% since the start of the time serie
+
+```{r Freq 50}
+#| cache: false
+#| echo: false
+#| warning: false
+#| fig-cap: >
+#|  Map of the amount of time each pixel had SPC values above 50% since the start of the time serie 
+#| label: fig-Freq50_CA
+#| out-width: "100%"
+
+library(raster)
+library(leaflet)
+library(leafem)
+library(viridis)
+
+# load or create your raster
+# r <- raster("path/to/your.tif")
+# for illustration, make a small test raster:
+r_FrequCA <- raster("Data/Cadiz_Bay/Output/Freq_above_50.tif")
+values(r_FrequCA)[values(r_FrequCA) == 0] <- NA
+
+# data_FrequCA <- r_FrequCA %>%
+#   as.data.frame() %>% 
+#   reframe(mean = mean(slope_since_maximum, na.rm = T))
+
+# define a color palette function based on the raster’s values
+pal <- colorNumeric(
+  palette = RColorBrewer::brewer.pal(11, "Spectral"),
+  domain  = 20:100,
+  na.color = "transparent",
+  reverse = T
+)
+
+# build the leaflet map
+leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = r_FrequCA[[1]], 
+    project = TRUE,
+    colors  = pal, 
+    opacity = 0.8, 
+    layerId = "Frequency Above SPC 50",
+    group = "Frequency Above SPC 50"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal, 
+    values = values(r_FrequCA),
+    title  = "Pixel value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  addImageQuery(
+    # map    = .,
+    x = r_FrequCA[[1]],
+    project = TRUE,
+    layerId= "Frequency Above SPC 50",
+    type   = "mousemove",
+    digits = 2,
+    prefix = ""
+  )%>%
+      addLayersControl(overlayGroups = "Frequency Above SPC 50")
+```
+
+@fig-Freq50_CA shows the proportion of time each pixel maintained an SPC value above 50%. Most of the southernmost part of the meadow consistently displayed SPC values above 50%, whereas some areas in the northernmost part of the meadow only exceeded this threshold between 50% and 62.5% of the time.
+
 ```{r SHP}
 #| cache: false
 #| echo: false

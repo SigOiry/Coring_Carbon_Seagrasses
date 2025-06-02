@@ -56,6 +56,13 @@
     "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing 8.39% of its seagrass cover per year since reaching its maximum."
   },
   {
+    "objectID": "Cadiz_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
+    "href": "Cadiz_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
+    "title": "Cadiz Bay",
+    "section": "Amount of time above 50% since the start of the time serie",
+    "text": "Amount of time above 50% since the start of the time serie\n\n\n\n\n\n\n\n\nFigure 7: Map of the amount of time each pixel had SPC values above 50% since the start of the time serie\n\n\n\n\nFigure 7 shows the proportion of time each pixel maintained an SPC value above 50%. Most of the southernmost part of the meadow consistently displayed SPC values above 50%, whereas some areas in the northernmost part of the meadow only exceeded this threshold between 50% and 62.5% of the time."
+  },
+  {
     "objectID": "Bourgneuf_Bay.html",
     "href": "Bourgneuf_Bay.html",
     "title": "Bourgneuf Bay",
@@ -89,6 +96,13 @@
     "title": "Bourgneuf Bay",
     "section": "Rate of decline since the date of maximum",
     "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing 1.78% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow—likely where fishermen regularly carry out clam fishing activities—are experiencing much sharper declines, with rates reaching up to 25% per year."
+  },
+  {
+    "objectID": "Bourgneuf_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
+    "href": "Bourgneuf_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
+    "title": "Bourgneuf Bay",
+    "section": "Amount of time above 50% since the start of the time serie",
+    "text": "Amount of time above 50% since the start of the time serie\n\n\n\n\n\n\n\n\nFigure 7: Map of the amount of time each pixel had SPC values above 50% since the start of the time serie\n\n\n\n\nFigure 7 shows the proportion of time each pixel maintained an SPC value above 50%. Most of the meadow displays SPC values above this threshold between 50% and 60% of the time. More stable areas, where SPC exceeded 50% more than 80–90% of the time, are found in restricted zones within the main meadow (around 46.960679, -2.172888). In the northwestern part of the meadow, near the seaport of Noirmoutier-en-l’Île, no pixel exceeds the 60% frequency. Finally, the southernmost meadow, located near the Gois, shows low frequencies, with SPC values above 50% reached only about 30% of the time."
   },
   {
     "objectID": "Data/Bourgneuf_Bay/SHP/mask_meadow.html",

@@ -835,3 +835,72 @@ leaflet() %>%
 ```
 
 @fig-decline_BB shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_BB. On average, the meadow has been losing `r abs(round(data_decline$mean, 2))`% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow---likely where fishermen regularly carry out clam fishing activities---are experiencing much sharper declines, with rates reaching up to 25% per year.
+
+
+## Amount of time above 50% since the start of the time serie
+
+```{r Freq 50}
+#| cache: false
+#| echo: false
+#| warning: false
+#| fig-cap: >
+#|  Map of the amount of time each pixel had SPC values above 50% since the start of the time serie 
+#| label: fig-Freq50_BB
+#| out-width: "100%"
+
+library(raster)
+library(leaflet)
+library(leafem)
+library(viridis)
+
+# load or create your raster
+# r <- raster("path/to/your.tif")
+# for illustration, make a small test raster:
+r_FrequBB <- raster("Data/Bourgneuf_Bay/Output/Freq_above_50.tif")
+values(r_FrequBB)[values(r_FrequBB) == 0] <- NA
+
+# data_FrequBB <- r_FrequBB %>% 
+#   as.data.frame() %>% 
+#   reframe(mean = mean(slope_since_maximum, na.rm = T))
+
+# define a color palette function based on the raster’s values
+pal <- colorNumeric(
+  palette = RColorBrewer::brewer.pal(11, "Spectral"),
+  domain  = 20:100,
+  na.color = "transparent",
+  reverse = T
+)
+
+# build the leaflet map
+leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = r_FrequBB[[1]], 
+    project = TRUE,
+    colors  = pal, 
+    opacity = 0.8, 
+    layerId = "Frequency Above SPC 50",
+    group = "Frequency Above SPC 50"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal, 
+    values = values(r_FrequBB),
+    title  = "Pixel value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  addImageQuery(
+    # map    = .,
+    x = r_FrequBB[[1]],
+    project = TRUE,
+    layerId= "Frequency Above SPC 50",
+    type   = "mousemove",
+    digits = 2,
+    prefix = ""
+  )%>%
+      addLayersControl(overlayGroups = "Frequency Above SPC 50")
+```
+
+@fig-Freq50_BB shows the proportion of time each pixel maintained an SPC value above 50%. Most of the meadow displays SPC values above this threshold between 50% and 60% of the time. More stable areas, where SPC exceeded 50% more than 80–90% of the time, are found in restricted zones within the main meadow (around 46.960679, -2.172888). In the northwestern part of the meadow, near the seaport of Noirmoutier-en-l’Île, no pixel exceeds the 60% frequency. Finally, the southernmost meadow, located near the Gois, shows low frequencies, with SPC values above 50% reached only about 30% of the time.
