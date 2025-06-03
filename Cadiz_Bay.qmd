@@ -4,12 +4,13 @@ editor_options:
   chunk_output_type: console
 ---
 
-<div style="text-align: center; margin-top: 20px;">
-  <button onclick="window.open('https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Project_Cadiz.zip', '_blank');"
-          style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-    Download the Qgis project of Cadiz Bay
-  </button>
-</div>
+::: {style="text-align: center; margin-top: 20px;"}
+<button onclick="window.open(&#39;https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Project_Cadiz.zip&#39;, &#39;_blank&#39;);" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+
+Download the Qgis project of Cadiz Bay
+
+</button>
+:::
 
 ```{r update gitignore}
 #| cache: false
@@ -55,7 +56,7 @@ if (length(large_files) > 0) {
 
 Cádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of *Zostera noltei* and *Zostera marina*. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in @fig-map_IZ_CA, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. Saltmarsh areas are not concidered for this study and have therefore been removed from the mask.
 
-```{r leafletmap Intertidal_BB}
+```{r leafletmap Intertidal_CA}
 #| label: fig-map_IZ_CA
 #| fig-cap: Intertidal Mask of Cadiz Bay
 #| echo: false
@@ -88,6 +89,17 @@ polygons <- st_transform(polygons, 4326)
 # 3) Compute bounding box for initial view
 bb <- st_bbox(polygons)
 
+  color_pal <- c("goldenrod","firebrick","#2EA3EA","#20BD20","#B429D6")
+  
+  # 1. Compute centroids of each polygon
+centroids <- st_centroid(polygons)
+
+# 2. Extract coordinates (optional; you can also let leaflet pull from the sf geometry directly)
+df_labels <- st_coordinates(centroids) %>% 
+  as.data.frame()
+
+df_labels$labels <- polygons$Sites
+
 # 4) Build the Leaflet map
 leaflet() %>%
   # Satellite background
@@ -98,23 +110,43 @@ leaflet() %>%
     lng1 = bb["xmin"][[1]]*0.9999, lat1 = bb["ymin"][[1]]*0.9995,
     lng2 = bb["xmax"][[1]]*1.0009, lat2 = bb["ymax"][[1]]*1.0009
   ) %>%
-  
   # Overlay the actual polygons, faded
   addPolygons(
     data        = polygons,
-    color       = "goldenrod",    # border color
+    color       = color_pal,    # border color
     weight      = 2,            # border thickness
-    fillColor   = "goldenrod",    # fill color (same as border)
+    fillColor   = color_pal,    # fill color (same as border)
     fillOpacity = 0.3,
     popup       = ~paste0(
       "<strong>Area:</strong> ",
       round(area_km2, 2), " km²"
     )
+  ) %>%
+  
+  # 4. Add label-only markers as a group named "labels"
+  addLabelOnlyMarkers(
+    data = df_labels,
+    lng  = ~X,
+    lat  = ~Y,
+    label = ~labels,
+    group = "labels",
+    labelOptions = labelOptions(
+      noHide    = TRUE,
+      direction = "center",
+      textOnly  = TRUE,
+      style = list(
+        "font-size"    = "12px",
+        "font-weight"  = "bold",
+        "color"        = "white",
+        "text-shadow"  = "1px 1px 2px rgba(0,0,0,0.7)"
+      )
+    )
   )
+  
 
 ```
 
-For this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (@tbl-images_CA). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](index.html#sec-Methodology)).
+For this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (@tbl-images_CA). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](https://sigoiry.github.io/Coring_Carbon_Seagrasses/#sec-Methodology)).
 
 ```{r Table Images_CA}
 #| label: tbl-images_CA
@@ -131,14 +163,14 @@ library(officer)
 library(tidyverse)
 # example data
 sat_images <- data.frame(
-  Date    = as.Date(c("2017-11-08",
-                      "2018-11-28",
-                      "2019-11-18",
-                      "2020-11-17",
-                      "2021-11-10",
-                      "2022-10-13",
-                      "2023-11-17",
-                      "2024-10-22")),
+  Date    = as.Date(c("2017-06-26",
+                      "2018-05-17",
+                      "2019-06-21",
+                      "2020-05-26",
+                      "2021-05-10",
+                      "2022-05-06",
+                      "2023-05-11",
+                      "2024-07-09")),
   Sensor  = c("Sentinel-2",
               "Sentinel-2",
               "Sentinel-2",
@@ -219,6 +251,55 @@ ft <- flextable(combined) %>%
 
 # affichez l'objet flextable
 ft
+```
+
+```{r DATA CA}
+#| cache: false
+#| echo: false
+#| warning: false
+
+library(Utilities.Package)
+library(gganimate)
+library(terra)
+## 1. List your annual SPC TIFFs
+files <- list.files("Data/Cadiz_Bay/SPC", "\\.tif$", full.names = TRUE)
+
+# 2. Extract the year (YYYY) from each filename
+years <- as.integer(
+  format(
+    as.Date(
+      sub(".*_(\\d{8})_.*", "\\1", basename(files)),
+      format = "%Y%m%d"
+    ),
+    "%Y"
+  )
+)
+
+# 3. Sort files (and their years) so the last entry is the most recent
+ord   <- order(years)
+files <- files[ord]
+years <- years[ord]
+
+# 4. Load the stack and name each layer by its year
+r <- rast(files)
+names(r) <- years
+
+
+df_r <- as.data.frame(r, xy = T) %>% 
+  pivot_longer(-c(x,y), names_to = "Years",values_to = "Values")
+
+
+min_SPC_CA <- df_r %>% 
+  group_by(Years) %>% 
+  reframe(mean = mean(Values, na.rm = T)) %>% 
+  dplyr::filter(mean == min(mean))
+
+max_SPC_CA <- df_r %>% 
+  group_by(Years) %>% 
+  reframe(mean = mean(Values, na.rm = T)) %>% 
+  dplyr::filter(mean == max(mean))
+
+
 ```
 
 ```{r Processing_CA}
@@ -343,7 +424,7 @@ r_df$Years_since_low_density <- res_vec
 
 r_out <- rast(r_df, type = "xyz", crs = "EPSG:32629")
 
-plot(r_out$Years_since_low_density)
+# plot(r_out$Years_since_low_density)
 ggplot()+
   geom_spatraster(data = r_out, aes(fill = Years_since_low_density))
   # scale_fill_hypso_c(palette = "wiki-schwarzwald-cont")
@@ -457,6 +538,7 @@ r_df <- r %>%
 
 r_out <- rast(r_df, type = "xyz", crs = "EPSG:32629")
 
+plot(r_out)
 # 8. Write out the results
 writeRaster(r_out$year_of_maximum,
             "Data/Cadiz_Bay/Output/year_of_maximum_CA.tif",
@@ -468,56 +550,7 @@ writeRaster(r_out$slope_since_maximum,
 message("Done: ‘year_of_maximum.tif’ and ‘slope_since_maximum.tif’ written.")
 
 
-```
-
 ## Seagrass Percent Cover time series
-
-```{r DATA CA}
-#| cache: false
-#| echo: false
-#| warning: false
-
-library(Utilities.Package)
-library(gganimate)
-library(terra)
-## 1. List your annual SPC TIFFs
-files <- list.files("Data/Cadiz_Bay/SPC", "\\.tif$", full.names = TRUE)
-
-# 2. Extract the year (YYYY) from each filename
-years <- as.integer(
-  format(
-    as.Date(
-      sub(".*_(\\d{8})_.*", "\\1", basename(files)),
-      format = "%Y%m%d"
-    ),
-    "%Y"
-  )
-)
-
-# 3. Sort files (and their years) so the last entry is the most recent
-ord   <- order(years)
-files <- files[ord]
-years <- years[ord]
-
-# 4. Load the stack and name each layer by its year
-r <- rast(files)
-names(r) <- years
-
-
-df_r <- as.data.frame(r, xy = T) %>% 
-  pivot_longer(-c(x,y), names_to = "Years",values_to = "Values")
-
-
-min_SPC_CA <- df_r %>% 
-  group_by(Years) %>% 
-  reframe(mean = mean(Values, na.rm = T)) %>% 
-  dplyr::filter(mean == min(mean))
-
-max_SPC_CA <- df_r %>% 
-  group_by(Years) %>% 
-  reframe(mean = mean(Values, na.rm = T)) %>% 
-  dplyr::filter(mean == max(mean))
-
 
 ```
 
@@ -555,7 +588,7 @@ animate_SPC <- df_r %>%
 
 
 rendered_SPC <- gganimate::animate(animate_SPC, duration = length(unique(df_r$Years)), fps = 1, 
-  width      = 800,   
+  width      = 1000,   
   height     = 800,   
   units      = "px", res = 100, end_pause = 1, rewind = F, renderer = gifski_renderer(loop = T))
 
@@ -599,8 +632,37 @@ library(viridis)
 # load or create your raster
 # r <- raster("path/to/your.tif")
 # for illustration, make a small test raster:
-r_above50 <- raster("Data/Cadiz_Bay/Output/years_to_below_threshold_50_CA.tif")
+r_above50_CA <- raster("Data/Cadiz_Bay/Output/years_to_below_threshold_50_CA.tif")
+shp_path <- "Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp"
+polygons <- st_read(shp_path, quiet = TRUE) %>% 
+  st_transform(crs = 4326)
 
+# 1) Define exactly the order you want for sites‐and‐colors:
+site_names <- c(
+  "Isla Verde",      # → darkred
+  "Sampling area",   # → blue
+  "Military area",   # → goldenrod
+  "Molino Grande",   # → purple
+  "Marambay"         # → green
+)
+
+site_colors <- c(
+  "darkred", 
+  "#2EA3EA", 
+  "goldenrod", 
+  "#B429D6", 
+  "#20BD20"
+)
+
+polygons$Sites <- factor(polygons$Sites, levels = site_names)
+
+
+color_pal <- c("goldenrod","firebrick","#2EA3EA","#20BD20","#B429D6")
+
+site_pal <- colorFactor(
+  palette = site_colors,
+  domain  = site_names
+)
 
 
 # define a color palette function based on the raster’s values
@@ -615,65 +677,70 @@ leaflet() %>%
   addProviderTiles(providers$Esri.WorldImagery) %>%
   # add the raster, assign a layerId so leafem knows which layer to query
   addRasterImage(
-    x       = r_above50[[1]], 
+    x       = r_above50_CA[[1]], 
     project = TRUE,
     colors  = pal, 
     opacity = 0.8, 
-    layerId = "Years above 50%",
-    group = "Years above 50%"
-  ) %>% 
+    layerId = "Amount of Years SPC higher 50",
+    group = "Amount of Years SPC higher 50"
+  ) %>%
+  
+  # (b) Draw polygons, using site_pal(Sites) for both border and fill:
+  addPolygons(
+    data        = polygons,
+    color       = ~site_pal(Sites),  
+    weight      = 3,
+    fillColor   = ~site_pal(Sites),
+    fillOpacity = 0,
+    # label       = ~Sites,
+    group       = "Sites"
+  ) %>%
   # add a continuous legend
   addLegend(
     pal    = pal, 
-    values = values(r_above50),
+    values = values(r_above50_CA),
     title  = "Number of Years above 50%",
     position = "bottomright"
-  ) %>% 
+  ) %>%
+  
+  # (b) Add a categorical legend, forcing the exact order = site_names:
+  addLegend(
+    pal      = site_pal,
+    values   = site_names,     # ← must match the same vector/order used above
+    title    = "Sites",
+    position = "bottomleft"
+  ) %>%
   # wire up click‐popup: show value with 2 decimals
   addImageQuery(
     # map    = .,
-    x = r_above50[[1]],
+    x = r_above50_CA[[1]],
     project = TRUE,
-    layerId= "Years above 50%",
+    layerId= "Amount of Years SPC higher 50",
     type   = "mousemove",
     digits = 0,
     prefix = ""
-  )%>%
-      addLayersControl(overlayGroups = "Years above 50%")
+  ) %>%
+  
+  # (5) Mouse‐position display (lat/lng follows cursor)
+  addMouseCoordinates(
+    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
+    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
+  ) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>%
+  addLayersControl(overlayGroups = "Amount of Years SPC higher 50")
+
 ```
 
-```{r Historical patches data}
-#| cache: false
-#| echo: false
-#| warning: false
-
-library(terra)
-library(tidyverse)
-
-morethan29 <- rast("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif")  %>% 
-  as.data.frame(xy = T) %>% 
-  dplyr::filter(Years_since_low_density >= 29,
-                y>6663000,
-                x>306900) %>% 
-  reframe(x = mean(x), y = mean(y), n = nrow(.))
-
-pt_32630 <- st_sfc(st_point(c(morethan29$x, morethan29$y)), crs = 32629)
-# transform to EPSG:4326 (WGS84 lon/lat)
-pt_4326 <- st_transform(pt_32630, 4326)
-
-# extract the lon/lat
-coords_4326 <- st_coordinates(pt_4326) %>% 
-  as.vector()
-
-morethan33 <- rast("Data/Bourgneuf_Bay/Output/years_to_below_threshold_50_BB.tif")  %>% 
-  as.data.frame(xy = T) %>% 
-  dplyr::filter(Years_since_low_density > 33,
-                y>6663000,
-                x>306900) %>% 
-  reframe(x = mean(x), y = mean(y), n = nrow(.))
-```
-
-@fig-historical_patches_CA shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The inner part of the meadows has shown an SPC higher then 50% every years since the start of the time serie in 2017. The upper part of the meadows, toward the shore seems to be more recent.
+@fig-historical_patches_CA shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The most consistent part of the meadow is located near the [the old military area](https://maps.app.goo.gl/t1UWcJQ7mht3D2T57), where the seafloor has shown SPC values above 50% every year since the beginning of the time series in 2017. Haro et al. (2021) reported the presence of Caulerpa species in this area, so it is possible that this consistently dense patch may be Caulerpa rather than seagrass. Ground-truthing is necessary to confirm the true nature of this vegetation. Some areas near the [sampling location](https://maps.app.goo.gl/FqGTDvki9nTcyXzi9) also show consistently high SPC values above 50% since 2017. In contrast, the southernmost part of the study site shows more variability, with less consistent SPC values over time. 
 
 ## Year of the maximum of cover
 
@@ -721,8 +788,42 @@ leaflet() %>%
     values = values(r_years_max),
     title  = "Pixel value",
     position = "bottomright"
-  ) %>% 
-  # wire up click‐popup: show value with 2 decimals
+  ) %>%
+  
+  # (5) Mouse‐position display (lat/lng follows cursor)
+  addMouseCoordinates(
+    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
+    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
+  ) %>%
+  
+  # (b) Draw polygons, using site_pal(Sites) for both border and fill:
+  addPolygons(
+    data        = polygons,
+    color       = ~site_pal(Sites),  
+    weight      = 3,
+    fillColor   = ~site_pal(Sites),
+    fillOpacity = 0,
+    # label       = ~Sites,
+    group       = "Sites"
+  ) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>%
+  
+  # (b) Add a categorical legend, forcing the exact order = site_names:
+  addLegend(
+    pal      = site_pal,
+    values   = site_names,     # ← must match the same vector/order used above
+    title    = "Sites",
+    position = "bottomleft"
+  ) %>%  # wire up click‐popup: show value with 2 decimals
   addImageQuery(
     # map    = .,
     x = r_years_max[[1]],
@@ -732,7 +833,7 @@ leaflet() %>%
     digits = 0,
     prefix = ""
   )%>%
-      addLayersControl(overlayGroups = "Year of the Maximum")
+  addLayersControl(overlayGroups = "Year of the Maximum")
 ```
 
 ```{r histogram Year of the maxCA}
@@ -747,18 +848,61 @@ leaflet() %>%
 library(terra)
 library(tidyverse)
 
-rast("Data/Cadiz_Bay/Output/year_of_maximum_CA.tif")  %>% 
-  as.data.frame() %>% 
-  group_by(year_of_maximum) %>% 
-  reframe(area = (n()*10*10)*0.0001) %>% 
-  ggplot(aes(x = year_of_maximum, y = area))+
-  geom_bar(stat="identity")+
-  theme_Bede()+
-  labs(x="Years",y="Area (ha)")
+img <- rast("Data/Cadiz_Bay/Output/year_of_maximum_CA.tif")
+shp <- vect("Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp")
+polygons <- read_sf("Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp")
 
+color_pal <- c("Military area" = "goldenrod",
+               "Isla Verde" = "firebrick",
+               "Sampling area" = "#2EA3EA",
+               "Marambay" = "#20BD20",
+               "Molino Grande"="#B429D6")
+
+
+# 2) Compute area in km²
+#    a) project to Web Mercator (units in metres)
+polygons_m <- st_transform(polygons, 3857)
+
+#    b) calculate area (gives units m^2), convert to km^2, drop units
+polygons$area_km2 <- set_units(st_area(polygons_m), km^2)
+polygons$area_km2 <- drop_units(polygons$area_km2)
+
+areas <- polygons %>% 
+  as.data.frame() %>% 
+  dplyr::select(-geometry)
+
+df_vals <- terra::extract(img, shp, ID=TRUE)
+
+# 2. Pull the attribute‐table out of 'shp' and give it an 'ID' column that matches
+#    the feature‐index in 'df_vals'.
+attr_tbl <- as.data.frame(shp)
+attr_tbl$ID <- seq_len(nrow(attr_tbl))
+
+df_vals %>%
+  left_join(attr_tbl, by = "ID") %>% 
+  as.data.frame() %>% 
+  dplyr::filter(!is.na(year_of_maximum)) %>% 
+  group_by(year_of_maximum, Sites) %>% 
+  reframe(area = (n()*10*10)*10^-6) %>% 
+  group_by(Sites) %>% 
+  mutate(tot_area = sum(area)) %>% 
+  ungroup() %>% 
+  mutate(prop = (area/tot_area)*100) %>%
+  ggplot(aes(x = year_of_maximum, y = prop, fill = Sites)) +
+    geom_bar(
+      stat       = "identity",
+      position   = position_dodge(width = 0.8),
+      width      = 0.7
+    ) +
+  lims(y = c(0,100)) + 
+    theme_Bede() +
+    labs(x = "Years", y = "Area of the site (%) reaching the maximum SPC of the time serie")+
+  scale_fill_manual(values = color_pal)+
+  scale_color_manual(values = color_pal)+
+  theme(legend.position = c(0.2,0.7))
 ```
 
-@fig-max_year_CA shows, for each pixel, the year in which it reached its maximum Seagrass Percentage Cover (SPC). This same information is presented in @fig-Hist_max_CA as a histogram, illustrating, for each year, the total area of the meadow that attained its highest recorded SPC value. In 2017, approximately 20 hectares of the study site exhibited their highest SPC on record. These areas correspond to the red pixels in @fig-max_year_CA and are located in the lowest part of the intertidal zone, where the meadow is almost always submerged. It is possible that the tidal conditions in 2017 included the lowest tide of the entire time series, allowing these typically submerged areas to emerge, whereas in other years, tides may not have been low enough to expose them. In 2021, nearly 50 hectares of the meadow reached their maximum SPC value, represented by the green pixels in @fig-max_year_CA. These pixels are located in the inner part of the meadow.
+@fig-max_year_CA shows, for each pixel, the year in which it reached its maximum Seagrass Percentage Cover (SPC). At the [sampling location](https://maps.app.goo.gl/FqGTDvki9nTcyXzi9), approximately 70% of the area reached its maximum SPC in 2022, and 25% in 2018 (@fig-Hist_max_CA). Across all sites, almost no pixels reached their maximum values in 2020 or 2023.
 
 ## Rate of decline since the date of maximum
 
@@ -775,6 +919,38 @@ library(raster)
 library(leaflet)
 library(leafem)
 library(viridis)
+
+shp_path <- "Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp"
+polygons <- st_read(shp_path, quiet = TRUE) %>% 
+  st_transform(crs = 4326)
+
+# 1) Define exactly the order you want for sites‐and‐colors:
+site_names <- c(
+  "Isla Verde",      # → darkred
+  "Sampling area",   # → blue
+  "Military area",   # → goldenrod
+  "Molino Grande",   # → purple
+  "Marambay"         # → green
+)
+
+site_colors <- c(
+  "darkred", 
+  "#2EA3EA", 
+  "goldenrod", 
+  "#B429D6", 
+  "#20BD20"
+)
+
+polygons$Sites <- factor(polygons$Sites, levels = site_names)
+
+
+color_pal <- c("goldenrod","firebrick","#2EA3EA","#20BD20","#B429D6")
+
+site_pal <- colorFactor(
+  palette = site_colors,
+  domain  = site_names
+)
+
 
 # load or create your raster
 # r <- raster("path/to/your.tif")
@@ -822,11 +998,181 @@ leaflet() %>%
     type   = "mousemove",
     digits = 2,
     prefix = ""
+  ) %>%
+  
+  # (5) Mouse‐position display (lat/lng follows cursor)
+  addMouseCoordinates(
+    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
+    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
+  ) %>%
+  
+  # (b) Draw polygons, using site_pal(Sites) for both border and fill:
+  addPolygons(
+    data        = polygons,
+    color       = ~site_pal(Sites),  
+    weight      = 3,
+    fillColor   = ~site_pal(Sites),
+    fillOpacity = 0,
+    # label       = ~Sites,
+    group       = "Sites"
+  ) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>%
+  
+  # (b) Add a categorical legend, forcing the exact order = site_names:
+  addLegend(
+    pal      = site_pal,
+    values   = site_names,     # ← must match the same vector/order used above
+    title    = "Sites",
+    position = "bottomleft"
   )%>%
       addLayersControl(overlayGroups = "Rate of Decline")
 ```
 
-@fig-decline_CA shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_CA. On average, the meadow has been losing `r abs(round(data_declineCA$mean, 2))`% of its seagrass cover per year since reaching its maximum.
+@fig-decline_CA shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_CA. On average, the meadow has been losing `r abs(round(data_declineCA$mean, 2))`% of its seagrass cover per year since reaching its maximum. 
+
+## Amount of time above 50% since the start of the time serie
+
+```{r Freq 50}
+#| cache: false
+#| echo: false
+#| warning: false
+#| fig-cap: >
+#|  Map of the amount of time each pixel had SPC values above 50% since the start of the time serie 
+#| label: fig-Freq50_CA
+#| out-width: "100%"
+
+library(raster)
+library(leaflet)
+library(leafem)
+library(viridis)
+
+shp_path <- "Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp"
+polygons <- st_read(shp_path, quiet = TRUE) %>% 
+  st_transform(crs = 4326)
+
+# 1) Define exactly the order you want for sites‐and‐colors:
+site_names <- c(
+  "Isla Verde",      # → darkred
+  "Sampling area",   # → blue
+  "Military area",   # → goldenrod
+  "Molino Grande",   # → purple
+  "Marambay"         # → green
+)
+
+site_colors <- c(
+  "darkred", 
+  "#2EA3EA", 
+  "goldenrod", 
+  "#B429D6", 
+  "#20BD20"
+)
+
+polygons$Sites <- factor(polygons$Sites, levels = site_names)
+
+
+color_pal <- c("goldenrod","firebrick","#2EA3EA","#20BD20","#B429D6")
+
+site_pal <- colorFactor(
+  palette = site_colors,
+  domain  = site_names
+)
+
+
+# load or create your raster
+# r <- raster("path/to/your.tif")
+# for illustration, make a small test raster:
+r_FrequCA <- raster("Data/Cadiz_Bay/Output/Freq_above_50.tif")
+values(r_FrequCA)[values(r_FrequCA) == 0] <- NA
+
+# data_FrequCA <- r_FrequCA %>%
+#   as.data.frame() %>% 
+#   reframe(mean = mean(slope_since_maximum, na.rm = T))
+
+# define a color palette function based on the raster’s values
+pal <- colorNumeric(
+  palette = RColorBrewer::brewer.pal(11, "Spectral"),
+  domain  = 20:100,
+  na.color = "transparent",
+  reverse = T
+)
+
+# build the leaflet map
+leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = r_FrequCA[[1]], 
+    project = TRUE,
+    colors  = pal, 
+    opacity = 1, 
+    layerId = "Frequency Above SPC 50",
+    group = "Frequency Above SPC 50"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal, 
+    values = values(r_FrequCA),
+    title  = "Pixel value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  addImageQuery(
+    # map    = .,
+    x = r_FrequCA[[1]],
+    project = TRUE,
+    layerId= "Frequency Above SPC 50",
+    type   = "mousemove",
+    digits = 2,
+    prefix = ""
+  ) %>%
+  
+  # (5) Mouse‐position display (lat/lng follows cursor)
+  addMouseCoordinates(
+    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
+    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
+  ) %>%
+  
+  # (b) Draw polygons, using site_pal(Sites) for both border and fill:
+  addPolygons(
+    data        = polygons,
+    color       = ~site_pal(Sites),  
+    weight      = 3,
+    fillColor   = ~site_pal(Sites),
+    fillOpacity = 0,
+    # label       = ~Sites,
+    group       = "Sites"
+  ) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>%
+  
+  # (b) Add a categorical legend, forcing the exact order = site_names:
+  addLegend(
+    pal      = site_pal,
+    values   = site_names,     # ← must match the same vector/order used above
+    title    = "Sites",
+    position = "bottomleft"
+  )%>%
+      addLayersControl(overlayGroups = "Frequency Above SPC 50")
+```
+
+@fig-Freq50_CA shows the proportion of time each pixel maintained an SPC value above 50%. The most consistent area is the military zone, which has persistently shown SPC values above 50%. The sampling site displays more variable coverage, with the inner part of the meadow more consistently maintaining high SPC values. In contrast, the northernmost section of the sampling area shows a lower frequency of high seagrass coverage. Finally, the meadow in Marambay shows high SPC values less frequently than the other sites.
 
 ```{r SHP}
 #| cache: false
@@ -974,4 +1320,3 @@ plot(shp_all)
 
 sf::write_sf(shp_all,"Data/Cadiz_Bay/Output/Freq_Higher_50percent_3class.shp")
 ```
-
