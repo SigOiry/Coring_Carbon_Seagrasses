@@ -21,46 +21,11 @@
     "text": "Images processing\nAll image processing was performed in R, using the terra and tidyverse packages.Maps were generated using the leaflet package.\n\nSeagrass Percent Cover\nThe methodology applied in this study is adapted from Zoffoli et al. (2021).\nSeagrass Percentage Cover (SPC) was derived from the NDVI using the equation established by Zoffoli et al. (2020):\n\\[\nSPC = 172.06 * NDVI - 22.18\n\\]\nPixels with SPC values below 20% were excluded from the analysis, due to the high risk of misclassification with other vegetation types. After applying the transformation, pixels with exceptionally high NDVI occasionally resulted in SPC values exceeding 100%. These were capped at 100%.\n\n\nHistorical seagrass patches of the meadow\nTo identify consistent high-coverage areas within the meadow, we calculated the number of consecutive years—starting from 2024—in which each pixel exhibited an SPC above 50%. For example, a value of 0 indicates that in 2024 the SPC was below 50%, while a value of 5 means that SPC exceeded 50% every year since 2019 (i.e., 2024 − 5), but not in 2018.\n\n\nYear of the maximum of cover\nFor each pixel, the year corresponding to its maximum SPC value during the time series was identified and recorded.\n\n\nRate of decline since the date of maximum\nStarting from the year of maximum SPC, a linear regression was fitted for each pixel to model SPC change over time. The slope of the regression line, when statistically significant (p-value &lt; 0.05), was assigned as the pixel’s rate of decline (expressed as percent cover change per year)."
   },
   {
-    "objectID": "Cadiz_Bay.html",
-    "href": "Cadiz_Bay.html",
-    "title": "Cadiz Bay",
+    "objectID": "Data/Aveiro_Lagoon/SHP/mask_land_intertidal_Aveiro.html",
+    "href": "Data/Aveiro_Lagoon/SHP/mask_land_intertidal_Aveiro.html",
+    "title": "Sampling_Cores_Carbon",
     "section": "",
-    "text": "Download the Qgis project of Cadiz Bay\nCádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of Zostera noltei and Zostera marina. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in Figure 1, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. Saltmarsh areas are not concidered for this study and have therefore been removed from the mask.\nFigure 1: Intertidal Mask of Cadiz Bay\nFor this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (Table 1). This work was published by Zoffoli et al. (2021). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see Methodology).\nTable 1\n\n\n\nDateCapteurDateCapteurDateCapteurjuin 26, 2017Sentinel-2mai 26, 2020Sentinel-2mai 11, 2023Sentinel-2mai 17, 2018Sentinel-2mai 10, 2021Sentinel-2juillet 09, 2024Sentinel-2juin 21, 2019Sentinel-2mai 06, 2022Sentinel-2\nList of Satellite images used to follow the meadows in Cadiz Bay\nFigure 2: Seagrass Cover in Percent over the years of the meadow of Cadiz Bay. Only pixels with an SPC above 20 % are displayed.\nFigure 2 is show the evolution of the Seagrass Cover over time, since 20175. The minimum density was recorded in 2023 with 44% of average cover, while the maximum density has been recorded in 2022 with 59% of average cover."
-  },
-  {
-    "objectID": "Cadiz_Bay.html#historical-seagrass-patches-of-the-meadow",
-    "href": "Cadiz_Bay.html#historical-seagrass-patches-of-the-meadow",
-    "title": "Cadiz Bay",
-    "section": "Historical seagrass patches of the meadow",
-    "text": "Historical seagrass patches of the meadow\n\n\n\n\n\n\n\n\nFigure 3: Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.\n\n\n\n\nFigure 3 shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The most consistent part of the meadow is located near the the old military area, where the seafloor has shown SPC values above 50% every year since the beginning of the time series in 2017. Haro et al. (2021) reported the presence of Caulerpa species in this area, so it is possible that this consistently dense patch may be Caulerpa rather than seagrass. Ground-truthing is necessary to confirm the true nature of this vegetation. Some areas near the sampling location also show consistently high SPC values above 50% since 2017. In contrast, the southernmost part of the study site shows more variability, with less consistent SPC values over time."
-  },
-  {
-    "objectID": "Cadiz_Bay.html#year-of-the-maximum-of-cover",
-    "href": "Cadiz_Bay.html#year-of-the-maximum-of-cover",
-    "title": "Cadiz Bay",
-    "section": "Year of the maximum of cover",
-    "text": "Year of the maximum of cover\n\n\n\n\n\n\n\n\nFigure 4: Map of the year of maximum cover of the meadow\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: Area of the meadow reaching its maximum cover value ever for each year.\n\n\n\n\n\nFigure 4 shows, for each pixel, the year in which it reached its maximum Seagrass Percentage Cover (SPC). At the sampling location, approximately 70% of the area reached its maximum SPC in 2022, and 25% in 2018 (Figure 5). Across all sites, almost no pixels reached their maximum values in 2020 or 2023."
-  },
-  {
-    "objectID": "Cadiz_Bay.html#rate-of-decline-since-the-date-of-maximum",
-    "href": "Cadiz_Bay.html#rate-of-decline-since-the-date-of-maximum",
-    "title": "Cadiz Bay",
-    "section": "Rate of decline since the date of maximum",
-    "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing 3.26% of its seagrass cover per year since reaching its maximum."
-  },
-  {
-    "objectID": "Cadiz_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
-    "href": "Cadiz_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
-    "title": "Cadiz Bay",
-    "section": "Amount of time above 50% since the start of the time serie",
-    "text": "Amount of time above 50% since the start of the time serie\n\n\n\n\n\n\n\n\nFigure 7: Map of the amount of time each pixel had SPC values above 50% since the start of the time serie\n\n\n\n\nFigure 7 shows the proportion of time each pixel maintained an SPC value above 50%. The most consistent area is the military zone, which has persistently shown SPC values above 50%. The sampling site displays more variable coverage, with the inner part of the meadow more consistently maintaining high SPC values. In contrast, the northernmost section of the sampling area shows a lower frequency of high seagrass coverage. Finally, the meadow in Marambay shows high SPC values less frequently than the other sites."
-  },
-  {
-    "objectID": "Cadiz_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
-    "href": "Cadiz_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
-    "title": "Cadiz Bay",
-    "section": "Amount of time above 50% since the start of the time serie",
-    "text": "Amount of time above 50% since the start of the time serie\n\n\n\n\n\n\n\n\nFigure 7: Map of the amount of time each pixel had SPC values above 50% since the start of the time serie\n\n\n\n\nFigure 7 shows the proportion of time each pixel maintained an SPC value above 50%. Most of the southernmost part of the meadow consistently displayed SPC values above 50%, whereas some areas in the northernmost part of the meadow only exceeded this threshold between 50% and 62.5% of the time."
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     \n\n\n       +proj=utm +zone=29 +datum=WGS84 +units=m +no_defs 0 0     false"
   },
   {
     "objectID": "Bourgneuf_Bay.html",
@@ -105,52 +70,80 @@
     "text": "Amount of time above 50% since the start of the time serie\n\n\n\n\n\n\n\n\nFigure 7: Map of the amount of time each pixel had SPC values above 50% since the start of the time serie\n\n\n\n\nFigure 7 shows the proportion of time each pixel maintained an SPC value above 50%. Most of the meadow displays SPC values above this threshold between 50% and 60% of the time. More stable areas, where SPC exceeded 50% more than 80–90% of the time, are found in restricted zones within the main meadow (around 46.960679, -2.172888). In the northwestern part of the meadow, near the seaport of Noirmoutier-en-l’Île, no pixel exceeds the 60% frequency. Finally, the southernmost meadow, located near the Gois, shows low frequencies, with SPC values above 50% reached only about 30% of the time."
   },
   {
-    "objectID": "Data/Bourgneuf_Bay/SHP/mask_meadow.html",
-    "href": "Data/Bourgneuf_Bay/SHP/mask_meadow.html",
-    "title": "Sampling_Cores_Carbon",
-    "section": "",
-    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       PROJCRS[“WGS 84 / UTM zone 30N”,BASEGEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],ID[“EPSG”,4326]],CONVERSION[“UTM zone 30N”,METHOD[“Transverse Mercator”,ID[“EPSG”,9807]],PARAMETER[“Latitude of natural origin”,0,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8801]],PARAMETER[“Longitude of natural origin”,-3,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8802]],PARAMETER[“Scale factor at natural origin”,0.9996,SCALEUNIT[“unity”,1],ID[“EPSG”,8805]],PARAMETER[“False easting”,500000,LENGTHUNIT[“metre”,1],ID[“EPSG”,8806]],PARAMETER[“False northing”,0,LENGTHUNIT[“metre”,1],ID[“EPSG”,8807]]],CS[Cartesian,2],AXIS[“(E)”,east,ORDER[1],LENGTHUNIT[“metre”,1]],AXIS[“(N)”,north,ORDER[2],LENGTHUNIT[“metre”,1]],USAGE[SCOPE[“Navigation and medium accuracy spatial referencing.”],AREA[“Between 6°W and 0°W, northern hemisphere between equator and 84°N, onshore and offshore. Algeria. Burkina Faso. Côte’ Ivoire (Ivory Coast). Faroe Islands - offshore. France. Ghana. Gibraltar. Ireland - offshore Irish Sea. Mali. Mauritania. Morocco. Spain. United Kingdom (UK).”],BBOX[0,-6,84,0]],ID[“EPSG”,32630]] +proj=utm +zone=30 +datum=WGS84 +units=m +no_defs 3114 32630 EPSG:32630 WGS 84 / UTM zone 30N utm EPSG:7030 false"
-  },
-  {
     "objectID": "Aveiro_Lagoon.html",
     "href": "Aveiro_Lagoon.html",
     "title": "Ria de Aveiro Coastal Lagoon",
     "section": "",
-    "text": "Download the Qgis project of Cadiz Bay\nRia de Aveiro is a shallow coastal lagoon located on the northwest coast of Portugal, near the city of Aveiro. Formed by the Vouga River and connected to the Atlantic Ocean through an artificial inlet, the lagoon is characterized by a complex network of channels, mudflats, and salt marshes. Its wide intertidal zones host extensive seagrass meadows, mainly composed of Zostera noltei, which are most abundant in the inner, sheltered areas of the lagoon. These meadows are typically visible at low tide and contribute to the high ecological value of the system. As shown in Figure 1, the area considered in this study spans approximately 76 km².\nFigure 1: Intertidal Mask of Ria de Aveiro\nFor this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (Table 1). This work was published by Zoffoli et al. (2021). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see Methodology).\nTable 1\n\n\n\nDateCapteurDateCapteurDateCapteurjuin 26, 2017Sentinel-2mai 26, 2020Sentinel-2mai 11, 2023Sentinel-2mai 17, 2018Sentinel-2mai 10, 2021Sentinel-2juillet 09, 2024Sentinel-2juin 21, 2019Sentinel-2mai 06, 2022Sentinel-2\nList of Satellite images used to follow the meadows in Cadiz Bay\nFigure 2: Seagrass Cover in Percent over the years of the meadow of Cadiz Bay. Only pixels with an SPC above 20 % are displayed.\nFigure 2 is show the evolution of the Seagrass Cover over time, since 20175. The minimum density was recorded in 2023 with 44% of average cover, while the maximum density has been recorded in 2022 with 59% of average cover."
+    "text": "Download the Qgis project of Cadiz Bay\nRia de Aveiro is a shallow coastal lagoon located on the northwest coast of Portugal, near the city of Aveiro. Formed by the Vouga River and connected to the Atlantic Ocean through an artificial inlet, the lagoon is characterized by a complex network of channels, mudflats, and salt marshes. Its wide intertidal zones host extensive seagrass meadows, mainly composed of Zostera noltei, which are most abundant in the inner, sheltered areas of the lagoon. These meadows are typically visible at low tide and contribute to the high ecological value of the system. As shown in Figure 1, the area considered in this study spans approximately 76 km².\nFigure 1: Intertidal Mask of Ria de Aveiro\nFor this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (Table 1). This work was published by Zoffoli et al. (2021). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see Methodology).\nTable 1\n\n\n\nDateCapteurDateCapteurDateCapteurjuillet 24, 2017Sentinel-2juillet 26, 2020Sentinel-2août 05, 2023Sentinel-2juillet 17, 2018Sentinel-2juillet 13, 2021Sentinel-2juillet 22, 2024Sentinel-2août 03, 2019Sentinel-2juillet 31, 2022Sentinel-2\nList of Satellite images used to follow the meadows in Aveiro Lagoon\nFigure 2: Seagrass Cover in Percent over the years of the meadow of Ria de Aveiro Lagoon. Only pixels with an SPC above 20 % are displayed.\nFigure 2 is show the evolution of the Seagrass Cover over time, since 20175. The minimum density was recorded in 2022 with 39% of average cover, while the maximum density has been recorded in 2024 with 45% of average cover."
   },
   {
     "objectID": "Aveiro_Lagoon.html#historical-seagrass-patches-of-the-meadow",
     "href": "Aveiro_Lagoon.html#historical-seagrass-patches-of-the-meadow",
     "title": "Ria de Aveiro Coastal Lagoon",
     "section": "Historical seagrass patches of the meadow",
-    "text": "Historical seagrass patches of the meadow\n\n\n\n\n\n\n\n\nFigure 3: Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.\n\n\n\n\nFigure 3 shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The most consistent part of the meadow is located near the the old military area, where the seafloor has shown SPC values above 50% every year since the beginning of the time series in 2017. Haro et al. (2021) reported the presence of Caulerpa species in this area, so it is possible that this consistently dense patch may be Caulerpa rather than seagrass. Ground-truthing is necessary to confirm the true nature of this vegetation. Some areas near the sampling location also show consistently high SPC values above 50% since 2017. In contrast, the southernmost part of the study site shows more variability, with less consistent SPC values over time."
+    "text": "Historical seagrass patches of the meadow\n\n\n\n\n\n\n\n\nFigure 3: Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024."
   },
   {
     "objectID": "Aveiro_Lagoon.html#year-of-the-maximum-of-cover",
     "href": "Aveiro_Lagoon.html#year-of-the-maximum-of-cover",
     "title": "Ria de Aveiro Coastal Lagoon",
     "section": "Year of the maximum of cover",
-    "text": "Year of the maximum of cover\n\n\n\n\n\n\n\n\nFigure 4: Map of the year of maximum cover of the meadow\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: Area of the meadow reaching its maximum cover value ever for each year.\n\n\n\n\n\nFigure 4 shows, for each pixel, the year in which it reached its maximum Seagrass Percentage Cover (SPC). At the sampling location, approximately 70% of the area reached its maximum SPC in 2022, and 25% in 2018 (Figure 5). Across all sites, almost no pixels reached their maximum values in 2020 or 2023."
+    "text": "Year of the maximum of cover\n\n\n\n\n\n\n\n\nFigure 4: Map of the year of maximum cover of the meadow\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: Area of the meadow reaching its maximum cover value ever for each year."
   },
   {
     "objectID": "Aveiro_Lagoon.html#rate-of-decline-since-the-date-of-maximum",
     "href": "Aveiro_Lagoon.html#rate-of-decline-since-the-date-of-maximum",
     "title": "Ria de Aveiro Coastal Lagoon",
     "section": "Rate of decline since the date of maximum",
-    "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing 3.26% of its seagrass cover per year since reaching its maximum."
+    "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4"
   },
   {
     "objectID": "Aveiro_Lagoon.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
     "href": "Aveiro_Lagoon.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
     "title": "Ria de Aveiro Coastal Lagoon",
     "section": "Amount of time above 50% since the start of the time serie",
+    "text": "Amount of time above 50% since the start of the time serie\n\n\n\n\n\n\n\n\nFigure 7: Map of the amount of time each pixel had SPC values above 50% since the start of the time serie"
+  },
+  {
+    "objectID": "Cadiz_Bay.html",
+    "href": "Cadiz_Bay.html",
+    "title": "Cadiz Bay",
+    "section": "",
+    "text": "Download the Qgis project of Cadiz Bay\nCádiz Bay is a large coastal lagoon located in southwestern Spain, along the Atlantic coast of Andalusia, near the city of Cádiz. Sheltered by a system of sandbars and low-lying coastal plains, the lagoon is fringed by salt marshes, tidal creeks, and mudflats. It features broad intertidal areas that support extensive seagrass meadows, primarily composed of Zostera noltei and Zostera marina. These meadows are particularly prominent in the inner parts of the lagoon and are exposed during low tide. As shown in Figure 1, the area analyzed in this study covers more than 7 km². Has water level varies greatly between images, the intertidal mask has been drawn in a conservative way, overestimating the actual intertidal area. Saltmarsh areas are not concidered for this study and have therefore been removed from the mask.\nFigure 1: Intertidal Mask of Cadiz Bay\nFor this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (Table 1). This work was published by Zoffoli et al. (2021). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see Methodology).\nTable 1\n\n\n\nDateCapteurDateCapteurDateCapteurjuin 26, 2017Sentinel-2mai 26, 2020Sentinel-2mai 11, 2023Sentinel-2mai 17, 2018Sentinel-2mai 10, 2021Sentinel-2juillet 09, 2024Sentinel-2juin 21, 2019Sentinel-2mai 06, 2022Sentinel-2\nList of Satellite images used to follow the meadows in Cadiz Bay\nFigure 2: Seagrass Cover in Percent over the years of the meadow of Cadiz Bay. Only pixels with an SPC above 20 % are displayed.\nFigure 2 is show the evolution of the Seagrass Cover over time, since 20175. The minimum density was recorded in 2023 with 44% of average cover, while the maximum density has been recorded in 2022 with 59% of average cover."
+  },
+  {
+    "objectID": "Cadiz_Bay.html#historical-seagrass-patches-of-the-meadow",
+    "href": "Cadiz_Bay.html#historical-seagrass-patches-of-the-meadow",
+    "title": "Cadiz Bay",
+    "section": "Historical seagrass patches of the meadow",
+    "text": "Historical seagrass patches of the meadow\n\n\n\n\n\n\n\n\nFigure 3: Consecutive years with ≥50% seagrass cover since 2024. The value X for each pixel indicates that the meadow has maintained a Seagrass Percentage Cover (SPC) above 50% every year for the past X years, counting backward from 2024.\n\n\n\n\nFigure 3 shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The most consistent part of the meadow is located near the the old military area, where the seafloor has shown SPC values above 50% every year since the beginning of the time series in 2017. Haro et al. (2021) reported the presence of Caulerpa species in this area, so it is possible that this consistently dense patch may be Caulerpa rather than seagrass. Ground-truthing is necessary to confirm the true nature of this vegetation. Some areas near the sampling location also show consistently high SPC values above 50% since 2017. In contrast, the southernmost part of the study site shows more variability, with less consistent SPC values over time."
+  },
+  {
+    "objectID": "Cadiz_Bay.html#year-of-the-maximum-of-cover",
+    "href": "Cadiz_Bay.html#year-of-the-maximum-of-cover",
+    "title": "Cadiz Bay",
+    "section": "Year of the maximum of cover",
+    "text": "Year of the maximum of cover\n\n\n\n\n\n\n\n\nFigure 4: Map of the year of maximum cover of the meadow\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 5: Area of the meadow reaching its maximum cover value ever for each year.\n\n\n\n\n\nFigure 4 shows, for each pixel, the year in which it reached its maximum Seagrass Percentage Cover (SPC). At the sampling location, approximately 70% of the area reached its maximum SPC in 2022, and 25% in 2018 (Figure 5). Across all sites, almost no pixels reached their maximum values in 2020 or 2023."
+  },
+  {
+    "objectID": "Cadiz_Bay.html#rate-of-decline-since-the-date-of-maximum",
+    "href": "Cadiz_Bay.html#rate-of-decline-since-the-date-of-maximum",
+    "title": "Cadiz Bay",
+    "section": "Rate of decline since the date of maximum",
+    "text": "Rate of decline since the date of maximum\n\n\n\n\n\n\n\n\nFigure 6: Map of the rate of decline (in Percent Cover per Year) since the date of maximum shown in Figure 4\n\n\n\n\nFigure 6 shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in Figure 4. On average, the meadow has been losing 3.26% of its seagrass cover per year since reaching its maximum."
+  },
+  {
+    "objectID": "Cadiz_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
+    "href": "Cadiz_Bay.html#amount-of-time-above-50-since-the-start-of-the-time-serie",
+    "title": "Cadiz Bay",
+    "section": "Amount of time above 50% since the start of the time serie",
     "text": "Amount of time above 50% since the start of the time serie\n\n\n\n\n\n\n\n\nFigure 7: Map of the amount of time each pixel had SPC values above 50% since the start of the time serie\n\n\n\n\nFigure 7 shows the proportion of time each pixel maintained an SPC value above 50%. The most consistent area is the military zone, which has persistently shown SPC values above 50%. The sampling site displays more variable coverage, with the inner part of the meadow more consistently maintaining high SPC values. In contrast, the northernmost section of the sampling area shows a lower frequency of high seagrass coverage. Finally, the meadow in Marambay shows high SPC values less frequently than the other sites."
   },
   {
-    "objectID": "Data/Aveiro_Lagoon/SHP/mask_land_intertidal_Aveiro.html",
-    "href": "Data/Aveiro_Lagoon/SHP/mask_land_intertidal_Aveiro.html",
+    "objectID": "Data/Bourgneuf_Bay/SHP/mask_meadow.html",
+    "href": "Data/Bourgneuf_Bay/SHP/mask_meadow.html",
     "title": "Sampling_Cores_Carbon",
     "section": "",
-    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     \n\n\n       +proj=utm +zone=29 +datum=WGS84 +units=m +no_defs 0 0     false"
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       PROJCRS[“WGS 84 / UTM zone 30N”,BASEGEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],ID[“EPSG”,4326]],CONVERSION[“UTM zone 30N”,METHOD[“Transverse Mercator”,ID[“EPSG”,9807]],PARAMETER[“Latitude of natural origin”,0,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8801]],PARAMETER[“Longitude of natural origin”,-3,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8802]],PARAMETER[“Scale factor at natural origin”,0.9996,SCALEUNIT[“unity”,1],ID[“EPSG”,8805]],PARAMETER[“False easting”,500000,LENGTHUNIT[“metre”,1],ID[“EPSG”,8806]],PARAMETER[“False northing”,0,LENGTHUNIT[“metre”,1],ID[“EPSG”,8807]]],CS[Cartesian,2],AXIS[“(E)”,east,ORDER[1],LENGTHUNIT[“metre”,1]],AXIS[“(N)”,north,ORDER[2],LENGTHUNIT[“metre”,1]],USAGE[SCOPE[“Navigation and medium accuracy spatial referencing.”],AREA[“Between 6°W and 0°W, northern hemisphere between equator and 84°N, onshore and offshore. Algeria. Burkina Faso. Côte’ Ivoire (Ivory Coast). Faroe Islands - offshore. France. Ghana. Gibraltar. Ireland - offshore Irish Sea. Mali. Mauritania. Morocco. Spain. United Kingdom (UK).”],BBOX[0,-6,84,0]],ID[“EPSG”,32630]] +proj=utm +zone=30 +datum=WGS84 +units=m +no_defs 3114 32630 EPSG:32630 WGS 84 / UTM zone 30N utm EPSG:7030 false"
   }
 ]

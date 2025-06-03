@@ -633,12 +633,11 @@ library(viridis)
 # r <- raster("path/to/your.tif")
 # for illustration, make a small test raster:
 r_above50_CA <- raster("Data/Cadiz_Bay/Output/years_to_below_threshold_50_CA.tif")
-<<<<<<< HEAD
+
 shp_path <- "Data/Cadiz_Bay/SHP/Mask_Intertidal_Cadiz.shp"
 polygons <- st_read(shp_path, quiet = TRUE) %>% 
   st_transform(crs = 4326)
-=======
->>>>>>> 2c4ec3f5451c26e706977ad726a9a3dfddbd31c6
+
 
 # 1) Define exactly the order you want for sites‐and‐colors:
 site_names <- c(
@@ -686,7 +685,6 @@ leaflet() %>%
     opacity = 0.8, 
     layerId = "Amount of Years SPC higher 50",
     group = "Amount of Years SPC higher 50"
-<<<<<<< HEAD
   ) %>%
   
   # (b) Draw polygons, using site_pal(Sites) for both border and fill:
@@ -699,9 +697,6 @@ leaflet() %>%
     # label       = ~Sites,
     group       = "Sites"
   ) %>%
-=======
-  ) %>% 
->>>>>>> 2c4ec3f5451c26e706977ad726a9a3dfddbd31c6
   # add a continuous legend
   addLegend(
     pal    = pal, 
@@ -726,7 +721,6 @@ leaflet() %>%
     type   = "mousemove",
     digits = 0,
     prefix = ""
-<<<<<<< HEAD
   ) %>%
   
   # (5) Mouse‐position display (lat/lng follows cursor)
@@ -745,11 +739,6 @@ leaflet() %>%
     captureZ           = FALSE           # if your CRS has elevation you can include Z
   ) %>%
   addLayersControl(overlayGroups = "Amount of Years SPC higher 50")
-
-=======
-  )%>%
-      addLayersControl(overlayGroups = "Amount of Years SPC higher 50")
->>>>>>> 2c4ec3f5451c26e706977ad726a9a3dfddbd31c6
 ```
 
 @fig-historical_patches_CA shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The most consistent part of the meadow is located near the [the old military area](https://maps.app.goo.gl/t1UWcJQ7mht3D2T57), where the seafloor has shown SPC values above 50% every year since the beginning of the time series in 2017. Haro et al. (2021) reported the presence of Caulerpa species in this area, so it is possible that this consistently dense patch may be Caulerpa rather than seagrass. Ground-truthing is necessary to confirm the true nature of this vegetation. Some areas near the [sampling location](https://maps.app.goo.gl/FqGTDvki9nTcyXzi9) also show consistently high SPC values above 50% since 2017. In contrast, the southernmost part of the study site shows more variability, with less consistent SPC values over time. 
@@ -1186,73 +1175,6 @@ leaflet() %>%
 
 @fig-Freq50_CA shows the proportion of time each pixel maintained an SPC value above 50%. The most consistent area is the military zone, which has persistently shown SPC values above 50%. The sampling site displays more variable coverage, with the inner part of the meadow more consistently maintaining high SPC values. In contrast, the northernmost section of the sampling area shows a lower frequency of high seagrass coverage. Finally, the meadow in Marambay shows high SPC values less frequently than the other sites.
 
-## Amount of time above 50% since the start of the time serie
-
-```{r Freq 50}
-#| cache: false
-#| echo: false
-#| warning: false
-#| fig-cap: >
-#|  Map of the amount of time each pixel had SPC values above 50% since the start of the time serie 
-#| label: fig-Freq50_CA
-#| out-width: "100%"
-
-library(raster)
-library(leaflet)
-library(leafem)
-library(viridis)
-
-# load or create your raster
-# r <- raster("path/to/your.tif")
-# for illustration, make a small test raster:
-r_FrequCA <- raster("Data/Cadiz_Bay/Output/Freq_above_50.tif")
-values(r_FrequCA)[values(r_FrequCA) == 0] <- NA
-
-# data_FrequCA <- r_FrequCA %>%
-#   as.data.frame() %>% 
-#   reframe(mean = mean(slope_since_maximum, na.rm = T))
-
-# define a color palette function based on the raster’s values
-pal <- colorNumeric(
-  palette = RColorBrewer::brewer.pal(11, "Spectral"),
-  domain  = 20:100,
-  na.color = "transparent",
-  reverse = T
-)
-
-# build the leaflet map
-leaflet() %>% 
-  addProviderTiles(providers$Esri.WorldImagery) %>%
-  # add the raster, assign a layerId so leafem knows which layer to query
-  addRasterImage(
-    x       = r_FrequCA[[1]], 
-    project = TRUE,
-    colors  = pal, 
-    opacity = 0.8, 
-    layerId = "Frequency Above SPC 50",
-    group = "Frequency Above SPC 50"
-  ) %>% 
-  # add a continuous legend
-  addLegend(
-    pal    = pal, 
-    values = values(r_FrequCA),
-    title  = "Pixel value",
-    position = "bottomright"
-  ) %>% 
-  # wire up click‐popup: show value with 2 decimals
-  addImageQuery(
-    # map    = .,
-    x = r_FrequCA[[1]],
-    project = TRUE,
-    layerId= "Frequency Above SPC 50",
-    type   = "mousemove",
-    digits = 2,
-    prefix = ""
-  )%>%
-      addLayersControl(overlayGroups = "Frequency Above SPC 50")
-```
-
-@fig-Freq50_CA shows the proportion of time each pixel maintained an SPC value above 50%. Most of the southernmost part of the meadow consistently displayed SPC values above 50%, whereas some areas in the northernmost part of the meadow only exceeded this threshold between 50% and 62.5% of the time.
 
 ```{r SHP}
 #| cache: false

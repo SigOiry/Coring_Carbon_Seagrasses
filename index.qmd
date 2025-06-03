@@ -30,14 +30,17 @@ library(jsonlite)
 
 
 coords <- data.frame(
-  name  = c("Bourgneuf Bay, France", "Cádiz Bay, Spain"),
-  lat   = c(47.11667, 36.53333),
-  lng   = c(-2.15000,  -6.30000),
-  label = c("Bourgneuf Bay",    "Cádiz Bay"),
+  name  = c("Bourgneuf Bay, France", "Cádiz Bay, Spain", "Ria de Aveiro, Portugal"),
+  lat   = c(47.11667, 36.53333, 40.695798
+
+),
+  lng   = c(-2.15000,  -6.30000, -8.670350),
+  label = c("Bourgneuf Bay",    "Cádiz Bay", "Ria de Aveiro Lagoon"),
   url     = c("https://sigoiry.github.io/Coring_Carbon_Seagrasses/Bourgneuf_Bay.html",
-              "https://sigoiry.github.io/Coring_Carbon_Seagrasses/Cadiz_Bay.html"),
-  xOffset = c(0,  0),    
-  yOffset = c(-30, -30),
+              "https://sigoiry.github.io/Coring_Carbon_Seagrasses/Cadiz_Bay.html",
+              "https://sigoiry.github.io/Coring_Carbon_Seagrasses/Aveiro_Lagoon.qmd"),
+  xOffset = c(0,  0,0),    
+  yOffset = c(-30, -30,-30),
   stringsAsFactors = FALSE
 )
 

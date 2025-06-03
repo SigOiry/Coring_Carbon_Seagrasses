@@ -839,10 +839,6 @@ leaflet() %>%
 
 @fig-decline_BB shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_BB. On average, the meadow has been losing `r abs(round(data_decline$mean, 2))`% of its seagrass cover per year since reaching its maximum. However, certain areas located in the central part of the meadow---likely where fishermen regularly carry out clam fishing activities---are experiencing much sharper declines, with rates reaching up to 25% per year.
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 2c4ec3f5451c26e706977ad726a9a3dfddbd31c6
 ## Amount of time above 50% since the start of the time serie
 
 ```{r Freq 50}

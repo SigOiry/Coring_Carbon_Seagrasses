@@ -12,6 +12,8 @@ website:
         text: Bourngeuf Bay
       - href: Cadiz_Bay.qmd
         text: Cadiz Bay
+      - href: Aveiro_Lagoon.qmd
+        text: Aveiro_Lagoon
 format:
   html:
     theme:
