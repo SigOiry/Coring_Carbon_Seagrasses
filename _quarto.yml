@@ -13,7 +13,7 @@ website:
       - href: Cadiz_Bay.qmd
         text: Cadiz Bay
       - href: Aveiro_Lagoon.qmd
-        text: Aveiro_Lagoon
+        text: Ria de Aveiro Lagoon
 format:
   html:
     theme:

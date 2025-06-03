@@ -38,7 +38,7 @@ coords <- data.frame(
   label = c("Bourgneuf Bay",    "Cádiz Bay", "Ria de Aveiro Lagoon"),
   url     = c("https://sigoiry.github.io/Coring_Carbon_Seagrasses/Bourgneuf_Bay.html",
               "https://sigoiry.github.io/Coring_Carbon_Seagrasses/Cadiz_Bay.html",
-              "https://sigoiry.github.io/Coring_Carbon_Seagrasses/Aveiro_Lagoon.qmd"),
+              "https://sigoiry.github.io/Coring_Carbon_Seagrasses/Aveiro_Lagoon.html"),
   xOffset = c(0,  0,0),    
   yOffset = c(-30, -30,-30),
   stringsAsFactors = FALSE
