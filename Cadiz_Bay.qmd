@@ -741,7 +741,7 @@ leaflet() %>%
   addLayersControl(overlayGroups = "Amount of Years SPC higher 50")
 ```
 
-@fig-historical_patches_CA shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The most consistent part of the meadow is located near the [the old military area](https://maps.app.goo.gl/t1UWcJQ7mht3D2T57), where the seafloor has shown SPC values above 50% every year since the beginning of the time series in 2017. Haro et al. (2021) reported the presence of Caulerpa species in this area, so it is possible that this consistently dense patch may be Caulerpa rather than seagrass. Ground-truthing is necessary to confirm the true nature of this vegetation. Some areas near the [sampling location](https://maps.app.goo.gl/FqGTDvki9nTcyXzi9) also show consistently high SPC values above 50% since 2017. In contrast, the southernmost part of the study site shows more variability, with less consistent SPC values over time. 
+@fig-historical_patches_CA shows the number of consecutive years, starting in 2024, during which each pixel maintained a Seagrass Percentage Cover (SPC) above 50% every single year. The most consistent part of the meadow is located near the [the old military area](https://maps.app.goo.gl/t1UWcJQ7mht3D2T57), where the seafloor has shown SPC values above 50% every year since the beginning of the time series in 2017. Haro et al. (2021) reported the presence of Caulerpa species in this area, so it is possible that this consistently dense patch may be Caulerpa rather than seagrass. Ground-truthing is necessary to confirm the true nature of this vegetation. Some areas near the [sampling location](https://maps.app.goo.gl/FqGTDvki9nTcyXzi9) also show consistently high SPC values above 50% since 2017. In contrast, the southernmost part of the study site shows more variability, with less consistent SPC values over time.
 
 ## Year of the maximum of cover
 
@@ -1038,7 +1038,7 @@ leaflet() %>%
       addLayersControl(overlayGroups = "Rate of Decline")
 ```
 
-@fig-decline_CA shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_CA. On average, the meadow has been losing `r abs(round(data_declineCA$mean, 2))`% of its seagrass cover per year since reaching its maximum. 
+@fig-decline_CA shows the rate of decline in seagrass cover, expressed as percent cover lost per year, since the year of maximum SPC indicated in @fig-max_year_CA. On average, the meadow has been losing `r abs(round(data_declineCA$mean, 2))`% of its seagrass cover per year since reaching its maximum.
 
 ## Amount of time above 50% since the start of the time serie
 
@@ -1174,7 +1174,6 @@ leaflet() %>%
 ```
 
 @fig-Freq50_CA shows the proportion of time each pixel maintained an SPC value above 50%. The most consistent area is the military zone, which has persistently shown SPC values above 50%. The sampling site displays more variable coverage, with the inner part of the meadow more consistently maintaining high SPC values. In contrast, the northernmost section of the sampling area shows a lower frequency of high seagrass coverage. Finally, the meadow in Marambay shows high SPC values less frequently than the other sites.
-
 
 ```{r SHP}
 #| cache: false

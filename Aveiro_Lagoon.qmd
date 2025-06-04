@@ -4,13 +4,13 @@ editor_options:
   chunk_output_type: console
 ---
 
-::: {style="text-align: center; margin-top: 20px;"}
-<button onclick="window.open(&#39;https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Project_Cadiz.zip&#39;, &#39;_blank&#39;);" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+<!-- ::: {style="text-align: center; margin-top: 20px;"} -->
+<!-- <button onclick="window.open(&#39;https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Project_Cadiz.zip&#39;, &#39;_blank&#39;);" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"> -->
 
-Download the Qgis project of Cadiz Bay
+<!-- Download the Qgis project of Cadiz Bay -->
 
-</button>
-:::
+<!-- </button> -->
+<!-- ::: -->
 
 ```{r update gitignore}
 #| cache: false
@@ -54,7 +54,7 @@ if (length(large_files) > 0) {
 }
 ```
 
-Ria de Aveiro is a shallow coastal lagoon located on the northwest coast of Portugal, near the city of Aveiro. Formed by the Vouga River and connected to the Atlantic Ocean through an artificial inlet, the lagoon is characterized by a complex network of channels, mudflats, and salt marshes. Its wide intertidal zones host extensive seagrass meadows, mainly composed of Zostera noltei, which are most abundant in the inner, sheltered areas of the lagoon. These meadows are typically visible at low tide and contribute to the high ecological value of the system. As shown in @fig-map_IZ_RA, the area considered in this study spans approximately 76 km². 
+Ria de Aveiro is a shallow coastal lagoon located on the northwest coast of Portugal, near the city of Aveiro. Formed by the Vouga River and connected to the Atlantic Ocean through an artificial inlet, the lagoon is characterized by a complex network of channels, mudflats, and salt marshes. Its wide intertidal zones host extensive seagrass meadows, mainly composed of Zostera noltei, which are most abundant in the inner, sheltered areas of the lagoon. These meadows are typically visible at low tide and contribute to the high ecological value of the system. As shown in @fig-map_IZ_RA, the area considered in this study spans approximately 12 km², spread over 14 study sites. Study sites have been chosen to match sites of [Sousa et al. (2019)](https://www.nature.com/articles/s41598-019-50425-4)
 
 ```{=html}
 <!-- 1) Add this CSS to your existing stylesheet (or inside a <style> in <head>) -->
@@ -117,7 +117,7 @@ Ria de Aveiro is a shallow coastal lagoon located on the northwest coast of Port
 <div class="warning-overlay-box" id="warningOverlay">
   <span class="warning-overlay-close" onclick="hideWarning()">✕</span>
   <h1>⚠️ Warning</h1>
-  <p>The intertidal make of the site still needs work because a lot of saltmarsh are included.</p>
+  <p>The Ria de Aveiro Lagoon meadows are not monospecific! The intertidal mask for this site was created by photointerpreting the presence of seagrass from Sentinel-2 images; therefore, other types of vegetation may have been included in the analysis.</p>
 </div>
 
 <!-- 3) Add this script (either right after the above or in your existing JS file) -->
@@ -148,17 +148,22 @@ Ria de Aveiro is a shallow coastal lagoon located on the northwest coast of Port
 #| warning: false
 #| out-width: "95%"
 
+
 # install.packages(c("sf","leaflet"))  # uncomment to install if needed
 library(sf)
 library(leaflet)
 library(units)
-
+library(leaflet.extras2)
+library(htmlwidgets)
 
 # 1) Read your polygon shapefile
-shp_path <- "Data/Aveiro_Lagoon/SHP/mask_land_intertidal_Aveiro.shp"
-polygons <- st_read(shp_path, quiet = TRUE) %>% 
-  dplyr::filter(Type == "Intertidal")
+shp_path <- "Data/Aveiro_Lagoon/SHP/Intertidal_masks_Aveiro.shp"
+polygons <- st_read(shp_path, quiet = TRUE)
 
+
+invalid <- !st_is_valid(polygons)
+# Corriger les géométries invalides (en supprimant ou corrigeant les sommets en double)
+polygons[invalid, ] <- st_make_valid(polygons[invalid, ])
 
 # 2) Compute area in km²
 #    a) project to Web Mercator (units in metres)
@@ -173,40 +178,61 @@ polygons <- st_transform(polygons, 4326)
 # 3) Compute bounding box for initial view
 bb <- st_bbox(polygons)
 
-# color_pal <- c("goldenrod","firebrick","#2EA3EA","#20BD20","#B429D6")
+color_pal <- c("black","#e3dac9","#318ce7","#0b486b","#272941",
+               "#1cceb7","#008080","#1b4d3e","#2c9c38","#f0a830",
+               "#ffa4e9","#e95081","#7b1e7a","#841b2d")
   
 
-# # 2. Extract coordinates (optional; you can also let leaflet pull from the sf geometry directly)
-# df_labels <- st_coordinates(centroids) %>% 
-#   as.data.frame()
-# 
-# # df_labels$labels <- polygons$Sites
 
-# 4) Build the Leaflet map
-leaflet() %>%
-  # Satellite background
+color_pal <- colorFactor(color_pal, polygons$Site)
+color_vec <- color_pal(polygons$Site)
+
+# Convert to JSON so it can be inlined into JS:
+
+# ─── 4. Grab the vector of site names and colors ───────────────────────────────────────────
+sites_vec  <- as.character(polygons$Site)
+colors_vec <- color_vec
+overall_bb <- st_bbox(polygons)
+
+# ─── 5. Build the leaflet map, add polygons, then attach onRender JS to create a legend ────
+
+# 5) Build the leaflet map, add polygons, and inject JS with .onRender()
+leaflet(polygons) %>%
   addProviderTiles(providers$Esri.WorldImagery) %>%
-  
-  # Zoom to your data’s extent
   fitBounds(
-    lng1 = bb["xmin"][[1]]*0.9999, lat1 = bb["ymin"][[1]]*0.9995,
-    lng2 = bb["xmax"][[1]]*1.0009, lat2 = bb["ymax"][[1]]*1.0009
+    lng1 = overall_bb["xmin"][[1]] * 1.001,
+    lat1 = overall_bb["ymin"][[1]] * 1.001,
+    lng2 = overall_bb["xmax"][[1]] * 0.999,
+    lat2 = overall_bb["ymax"][[1]] * 0.999
   ) %>%
-  # Overlay the actual polygons, faded
   addPolygons(
     data        = polygons,
-    color       = "white",    # border color
-    weight      = 2,            # border thickness
-    fillColor   = "white",    # fill color (same as border)
-    fillOpacity = 0.3,
-    popup       = ~paste0(
-      "<strong>Area:</strong> ",
-      round(area_km2, 2), " km²"
+    color       = colors_vec,
+    weight      = 2,
+    fillColor   = colors_vec,
+    fillOpacity = 0.5,
+    label       = ~paste0(Site, " : ", round(area_km2, 2), " km²"),
+    labelOptions = labelOptions(
+      direction = "auto",
+      style     = list("font-weight" = "normal", "padding" = "3px 8px"),
+      textsize  = "13px",
+      opacity   = 0.9
     )
-  ) 
-  
-
+  ) %>%
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
+  addLegend(
+    pal      = color_pal,
+    values   = polygons$Site,     # ← must match the same vector/order used above
+    title    = "Sites",
+    position = "bottomleft"
+  )
 ```
+
 
 For this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (@tbl-images_RA). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](https://sigoiry.github.io/Coring_Carbon_Seagrasses/#sec-Methodology)).
 
@@ -328,9 +354,8 @@ library(stars)
 
 
 
-It_mask <- "Data/Aveiro_Lagoon/SHP/mask_land_intertidal_Aveiro.shp" %>% 
-  vect() %>% 
-  dplyr::filter(Type == "Intertidal")
+It_mask <- "Data/Aveiro_Lagoon/SHP/Intertidal_masks_Aveiro.shp" %>% 
+  vect()
 
 SAFE_list <- list.dirs("Data/SAFE/", recursive = F, full.names = T) %>% 
   as_tibble() %>% 
@@ -625,42 +650,193 @@ max_SPC_RA <- df_r %>%
 
 library(Utilities.Package)
 library(gganimate)
+library(ggplot2)
+library(grid)
+library(terra)
+library(tidyverse)
+library(patchwork)
+## 1. List your annual SPC TIFFs
+files <- list.files("Data/Aveiro_Lagoon/SPC", "\\.tif$", full.names = TRUE)
 
-animate_SPC <- df_r %>% 
-  mutate(group_animate = Years) %>%
-  # dplyr::filter(Years == 2024) %>%
-  ggplot(aes(x = x, y = y, fill = Values, group = 1L))+
-  geom_tile()+
-  scale_fill_Bede(name = "Seagrass Cover (%)","mixed", discrete =F, na.value = "grey", limits = c(20, 100)) +
-  coord_equal()+
-  # labs(title = "Year: {closest_state}") +
-  geom_text(x = 752000, y = 4041000, aes(label = Years, group = group_animate),
-    inherit.aes = FALSE,
-    size = 10)+
-  theme_Bede_Map()+
-    # ggtitle(paste("Zoom jusqu’à", round(x_max), "nm")) +
+# 2. Extract the year (YYYY) from each filename
+years <- as.integer(
+  format(
+    as.Date(
+      sub(".*_(\\d{8})_.*", "\\1", basename(files)),
+      format = "%Y%m%d"
+    ),
+    "%Y"
+  )
+)
+
+# 3. Sort files (and their years) so the last entry is the most recent
+ord   <- order(years)
+files <- files[ord]
+years <- years[ord]
+
+# 4. Load the stack and name each layer by its year
+r <- rast(files)
+names(r) <- years
+It_mask <- "Data/Aveiro_Lagoon/SHP/Intertidal_masks_Aveiro.shp" %>% 
+  vect()
+
+df_vals <- terra::extract(r, It_mask, ID=TRUE, xy=T)
+
+# 2. Pull the attribute‐table out of 'shp' and give it an 'ID' column that matches
+#    the feature‐index in 'df_vals'.
+attr_tbl <- as.data.frame(It_mask)
+attr_tbl$ID <- seq_len(nrow(attr_tbl))
+
+df_all_by_site <- df_vals %>%
+  left_join(attr_tbl, by = "ID") %>% 
+  as.data.frame() %>% 
+  as_tibble() %>% 
+  dplyr::select(-ID) %>% 
+  pivot_longer(-c(x,y,Site), names_to = "year", values_to = "value")
+
+ext_site <- df_all_by_site %>% 
+  group_by(Site) %>% 
+  reframe(xmin = min(x), xmax = max(x),
+          ymin = min(y), ymax = max(y))
+
+# 1) Define a function that converts one set of (xmin, xmax, ymin, ymax) → square extent
+squareify_extent <- function(df) {
+  df %>%
+    rowwise() %>%
+    mutate(
+      # 1. compute original center
+      cx       = (xmin + xmax) / 2,
+      cy       = (ymin + ymax) / 2,
+      # 2. find half‐side of the square: half of the larger dimension
+      halfside = max(xmax - xmin, ymax - ymin) / 2,
+      # 3. build new, square bounds
+      xmin_new = cx - halfside,
+      xmax_new = cx + halfside,
+      ymin_new = cy - halfside,
+      ymax_new = cy + halfside
+    ) %>%
+    ungroup() %>%
+    # 4. drop the old cols and rename the “_new” ones back to xmin, xmax, …
+    select(
+      Site,
+      xmin = xmin_new, xmax = xmax_new,
+      ymin = ymin_new, ymax = ymax_new
+    )
+}
+
+# 2) Apply it to your ext_site
+ext_site_square <- squareify_extent(ext_site)
+
+for (i in 1:length(unique(df_all_by_site$Site))) {
+  
+  df_site <- df_all_by_site %>% 
+    dplyr::filter(Site == unique(Site)[i])%>% 
+    mutate(year = as.factor(year))
+  
+  ext <- ext_site_square %>% 
+    dplyr::filter(Site == unique(Site)[i]) 
+  
+  letter <- substr(df_site$Site[1],1,2) %>% 
+    gsub(" ","",.) %>% 
+    as.data.frame() %>% 
+    mutate(x = ext$xmin + (ext$xmax-ext$xmin)/10,
+           y = ext$ymax - (ext$ymax-ext$ymin)/10) %>% 
+    rename(label = ".")
+  
+  
+  animate_SPC <- df_site %>%
+    ggplot(aes(x = x, y = y, fill = value, group = 1L)) +
+    geom_tile(show.legend = F) +
+    scale_fill_Bede(
+      name = "Seagrass Cover (%)",
+      "mixed",
+      discrete = FALSE,
+      na.value = "grey",
+      limits = c(20, 100)
+    ) +
+    geom_text(x = letter$x, y = letter$y, label = letter$label, size = 20)+
+    lims(x = c(ext$xmin,ext$xmax), y = c(ext$ymin, ext$ymax))+
+    theme_Bede_Map() +
     theme(
       legend.position = c(0.45, 0.92),
       legend.text = element_text(size = 12),
-      axis.text.x = element_text(size = 12),
-      axis.text.y = element_text(size = 12)
-    )+
-  transition_manual(Years)  # transition_states(Years,
-  #                   transition_length = 2,
-  #                   state_length = 1)+
-  #   ease_aes("sine-in-out")
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.ticks.y = element_blank()
+    ) 
+  
+  if (letter$label == "F") {
+    letter$label <- "Fplot"
+  }
+  
+  assign(letter$label,animate_SPC)
+  
+  
+  # rendered_SPC <- gganimate::animate(animate_SPC, duration = length(unique(df_site$year)), fps = 1, 
+  #   width      = 1000,   
+  #   height     = 1000,   
+  #   units      = "px", res = 100, end_pause = 1, rewind = F, renderer = gifski_renderer(loop = T))
+  
+# anim_save(paste0("Plots/Aveiro/",letter$label,"_Animation_SPC_RA.gif"), animation = rendered_SPC)
+}
+
+  df_site <- df_all_by_site %>% 
+    dplyr::filter(Site == unique(Site)[1]) %>% 
+    mutate(year = as.factor(year))
+  
+  ext <- ext_site_square %>% 
+    dplyr::filter(Site == unique(Site)[1]) 
+  
+  text <- substr(df_site$Site[1],1,2) %>% 
+    gsub(" ","",.) %>% 
+    as.data.frame() %>% 
+    mutate(x = ext$xmin + 3*(ext$xmax-ext$xmin)/10,
+           y = ext$ymax - 5*(ext$ymax-ext$ymin)/10) %>% 
+    rename(label = ".")
+  
+  
+  legend <- df_site %>%
+    ggplot(aes(x = x, y = y, fill = value, group = 1L)) +
+    geom_tile() +
+    geom_tile(fill = "white") +
+    scale_fill_Bede(
+      name = "SPC (%)",
+      "mixed",
+      discrete = FALSE,
+      na.value = "grey",
+      limits = c(20, 100)
+    ) +
+    geom_text(x = text$x, y = text$y, aes(label = year), size = 30)+
+    lims(x = c(ext$xmin,ext$xmax), y = c(ext$ymin, ext$ymax))+
+    # facet_wrap(~Site, ncol = 5, scales = "free") +
+    theme_void()+
+    theme(legend.text = element_text(size = 20),
+          legend.title = element_text(size = 30),
+          legend.key.size = unit(1,"cm"),
+          legend.position = c(0.7,0.5))
+  
+  
+  plot <- (A+B+C1+C2+D)/(E+Fplot+G+I+L)/(M+N+O+P+legend)+
+    # facet_wrap(~Site, ncol = 5, scales = "free") +
+    # theme_void()+
+    transition_manual(year)
 
 
-rendered_SPC <- gganimate::animate(animate_SPC, duration = length(unique(df_r$Years)), fps = 1, 
-  width      = 1000,   
-  height     = 800,   
-  units      = "px", res = 100, end_pause = 1, rewind = F, renderer = gifski_renderer(loop = T))
-
-
-anim_save("Plots/Animation_SPC_RA.gif", animation = rendered_SPC)
-
+   gganimate::animate(plot, nframes = 100, fps = 20, width = 2000, height = 1200)
 
   
+  rendered_SPC <- gganimate::animate(plot, duration = length(unique(df_site$year)), fps = 1, 
+    width      = 2000,   
+    height     = 1200,   
+    units      = "px", res = 100, end_pause = 1, rewind = F, renderer = gifski_renderer(loop = T))
+  
+anim_save(paste0("Plots/Aveiro/Z_Animation_SPC_RA.gif"), animation = rendered_SPC)
+
+message("Combined GIF saved to: ", output_path)
+
 ```
 
 ```{r Figure1 GIF_SPC}
