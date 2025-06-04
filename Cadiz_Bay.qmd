@@ -141,7 +141,12 @@ leaflet() %>%
         "text-shadow"  = "1px 1px 2px rgba(0,0,0,0.7)"
       )
     )
-  )
+  ) %>% leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  ))
   
 
 ```
@@ -721,13 +726,13 @@ leaflet() %>%
     type   = "mousemove",
     digits = 0,
     prefix = ""
-  ) %>%
-  
-  # (5) Mouse‐position display (lat/lng follows cursor)
-  addMouseCoordinates(
-    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
-    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
-  ) %>%
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>% 
   
   # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
   addMeasure(
@@ -791,11 +796,12 @@ leaflet() %>%
     position = "bottomright"
   ) %>%
   
-  # (5) Mouse‐position display (lat/lng follows cursor)
-  addMouseCoordinates(
-    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
-    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
-  ) %>%
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>% 
   
   # (b) Draw polygons, using site_pal(Sites) for both border and fill:
   addPolygons(
@@ -1000,12 +1006,12 @@ leaflet() %>%
     digits = 2,
     prefix = ""
   ) %>%
-  
-  # (5) Mouse‐position display (lat/lng follows cursor)
-  addMouseCoordinates(
-    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
-    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
-  ) %>%
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>% 
   
   # (b) Draw polygons, using site_pal(Sites) for both border and fill:
   addPolygons(
@@ -1136,11 +1142,12 @@ leaflet() %>%
     prefix = ""
   ) %>%
   
-  # (5) Mouse‐position display (lat/lng follows cursor)
-  addMouseCoordinates(
-    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
-    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
-  ) %>%
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
   
   # (b) Draw polygons, using site_pal(Sites) for both border and fill:
   addPolygons(

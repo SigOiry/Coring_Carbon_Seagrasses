@@ -111,7 +111,13 @@ leaflet() %>%
       "<strong>Area:</strong> ",
       round(area_km2, 2), " km²"
     )
-  )
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  ))
 
 ```
 
@@ -649,7 +655,13 @@ leaflet() %>%
     type   = "mousemove",
     digits = 0,
     prefix = ""
-  )%>%
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  ))%>%
       addLayersControl(overlayGroups = "Amount of Years SPC higher 50")
 
 ```
@@ -743,7 +755,13 @@ leaflet() %>%
     type   = "mousemove",
     digits = 0,
     prefix = ""
-  )%>%
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  ))%>%
       addLayersControl(overlayGroups = "Year of the Maximum")
 ```
 
@@ -833,7 +851,13 @@ leaflet() %>%
     type   = "mousemove",
     digits = 2,
     prefix = ""
-  )%>%
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  ))%>%
       addLayersControl(overlayGroups = "Rate of Decline")
 ```
 
@@ -901,7 +925,13 @@ leaflet() %>%
     type   = "mousemove",
     digits = 2,
     prefix = ""
-  )%>%
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  ))%>%
       addLayersControl(overlayGroups = "Frequency Above SPC 50")
 ```
 

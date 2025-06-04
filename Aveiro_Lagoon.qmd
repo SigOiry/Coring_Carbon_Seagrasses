@@ -642,7 +642,6 @@ max_SPC_RA <- df_r %>%
 
 ```
 
-
 ```{r GIF_SPC_RA}
 #| echo: false
 #| eval: false
@@ -853,6 +852,74 @@ knitr::include_graphics("Plots/Animation_SPC_RA.gif")
 
 @fig-SPC_GIF_RA is show the evolution of the Seagrass Cover over time, since 20175. The minimum density was recorded in `r min_SPC_RA$Years` with `r round(min_SPC_RA$mean)`% of average cover, while the maximum density has been recorded in `r max_SPC_RA$Years` with `r round(max_SPC_RA$mean,0)`% of average cover.
 
+```{r average SPC}
+#| cache: false
+#| echo: false
+#| warning: false
+#| fig-cap: >
+#|   Boxplot of SPC for each site of Aveiro Lagoon.
+#| label: fig-Avg_SPC_RA
+#| out-width: "100%"
+
+library(raster)
+library(leaflet)
+library(leafem)
+library(viridis)
+library(Utilities.Package)
+
+# 1. List your annual SPC TIFFs
+files <- list.files("Data/Aveiro_Lagoon/SPC", "\\.tif$", full.names = TRUE)
+
+# 2. Extract the year (YYYY) from each filename
+years <- as.integer(
+  format(
+    as.Date(
+      sub(".*_(\\d{8})_.*", "\\1", basename(files)),
+      format = "%Y%m%d"
+    ),
+    "%Y"
+  )
+)
+color_pal <- c("black","#e3dac9","#318ce7","#0b486b","#272941",
+               "#1cceb7","#008080","#1b4d3e","#2c9c38","#f0a830",
+               "#ffa4e9","#e95081","#7b1e7a","#841b2d")
+# 3. Sort files (and their years) so the last entry is the most recent
+ord   <- order(years)
+files <- files[ord]
+years <- years[ord]
+
+# 4. Load the stack and name each layer by its year
+r <- rast(files)
+names(r) <- years
+It_mask <- "Data/Aveiro_Lagoon/SHP/Intertidal_masks_Aveiro.shp" %>% 
+  vect()
+
+df_vals <- terra::extract(r, It_mask, ID=TRUE, xy=T)
+
+# 2. Pull the attribute‐table out of 'shp' and give it an 'ID' column that matches
+#    the feature‐index in 'df_vals'.
+attr_tbl <- as.data.frame(It_mask)
+attr_tbl$ID <- seq_len(nrow(attr_tbl))
+
+df_all_by_site <- df_vals %>%
+  left_join(attr_tbl, by = "ID") %>% 
+  as.data.frame() %>% 
+  as_tibble() %>% 
+  dplyr::select(-ID) %>% 
+  pivot_longer(-c(x,y,Site), names_to = "year", values_to = "value")
+
+df_all_by_site %>% 
+  ggplot(aes(x = Site, y = value, color = Site))+
+  geom_boxplot( linewidth = 1)+
+  scale_color_manual(values = color_pal)+
+  scale_fill_manual(values = color_pal)+theme_Bede()+
+  ylab("SPC (%)")+
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+
+```
+
+
 ## Historical seagrass patches of the meadow
 
 ```{r Historical patch_RA}
@@ -960,12 +1027,12 @@ leaflet() %>%
     digits = 0,
     prefix = ""
   ) %>%
-  
-  # (5) Mouse‐position display (lat/lng follows cursor)
-  addMouseCoordinates(
-    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
-    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
-  ) %>%
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
   
   # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
   addMeasure(
@@ -1029,24 +1096,12 @@ leaflet() %>%
     title  = "Pixel value",
     position = "bottomright"
   ) %>%
-  
-  # (5) Mouse‐position display (lat/lng follows cursor)
-  addMouseCoordinates(
-    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
-    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
-  ) %>%
-  
-  # (b) Draw polygons, using site_pal(Sites) for both border and fill:
-  # addPolygons(
-  #   data        = polygons,
-  #   color       = ~site_pal(Sites),  
-  #   weight      = 3,
-  #   fillColor   = ~site_pal(Sites),
-  #   fillOpacity = 0,
-  #   # label       = ~Sites,
-  #   group       = "Sites"
-  # ) %>%
-  
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>% 
   # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
   addMeasure(
     position           = "topright",     # control’s corner on the map
@@ -1194,25 +1249,13 @@ leaflet() %>%
     type   = "mousemove",
     digits = 2,
     prefix = ""
-  ) %>%
-  
-  # (5) Mouse‐position display (lat/lng follows cursor)
-  addMouseCoordinates(
-    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
-    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
-  ) %>%
-  # 
-  # # (b) Draw polygons, using site_pal(Sites) for both border and fill:
-  # addPolygons(
-  #   data        = polygons,
-  #   color       = ~site_pal(Sites),  
-  #   weight      = 3,
-  #   fillColor   = ~site_pal(Sites),
-  #   fillOpacity = 0,
-  #   # label       = ~Sites,
-  #   group       = "Sites"
-  # ) %>%
-  # 
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>% 
   # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
   addMeasure(
     position           = "topright",     # control’s corner on the map
@@ -1297,14 +1340,13 @@ leaflet() %>%
     type   = "mousemove",
     digits = 2,
     prefix = ""
-  ) %>%
-  
-  # (5) Mouse‐position display (lat/lng follows cursor)
-  addMouseCoordinates(
-    # position = "topright",           # you can choose "topleft", "bottomleft", etc.
-    # labelStyle = "font-size: 12px; background: rgba(255,255,255,0.8); padding: 2px;"
-  ) %>%
-  
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>% 
   # # (b) Draw polygons, using site_pal(Sites) for both border and fill:
   # addPolygons(
   #   data        = polygons,
