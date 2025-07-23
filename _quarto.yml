@@ -12,8 +12,12 @@ website:
         text: Bourngeuf Bay
       - href: Cadiz_Bay.qmd
         text: Cadiz Bay
-      - href: Aveiro_Lagoon.qmd
-        text: Ria de Aveiro Lagoon
+      - text: Ria de Aveiro Lagoon      # label that shows in the bar
+        menu:                   # dropdown starts here
+          - href: Aveiro_Lagoon.qmd
+            text: Mapping
+          - href: Aveiro_Lagoon_Sampling.qmd
+            text: Sampling
 format:
   html:
     theme:

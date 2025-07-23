@@ -1,0 +1,918 @@
+---
+title: "RS sampling of Aveiro Lagoon"
+editor_options: 
+  chunk_output_type: console
+---
+
+<!-- ::: {style="text-align: center; margin-top: 20px;"} -->
+
+<!-- <button onclick="window.open(&#39;https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Project_Cadiz.zip&#39;, &#39;_blank&#39;);" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"> -->
+
+<!-- Download the Qgis project of Cadiz Bay -->
+
+<!-- </button> -->
+
+<!-- ::: -->
+
+```{r update gitignore}
+#| cache: false
+#| echo: false
+#| warning: false
+#| eval: false
+
+library(fs)
+
+# Define the size threshold in bytes (100 MB)
+size_threshold <- 100 * 1024 * 1024
+
+# Get a list of all files in the repository
+files <- dir_ls(recurse = TRUE, type = "file")
+
+# Filter files larger than the size threshold
+large_files <- files[file_info(files)$size > size_threshold]
+
+# Check if there are large files
+if (length(large_files) > 0) {
+  # Read the existing .gitignore file if it exists
+  gitignore_path <- ".gitignore"
+  gitignore_content <- if (file_exists(gitignore_path)) {
+    readLines(gitignore_path)
+  } else {
+    character(0)
+  }
+  
+  # Identify files not already in .gitignore
+  files_to_add <- large_files[!large_files %in% gitignore_content]
+  
+  # Append new large files to .gitignore
+  if (length(files_to_add) > 0) {
+    writeLines(c(gitignore_content, files_to_add), gitignore_path)
+    message(length(files_to_add), " file(s) added to .gitignore.")
+  } else {
+    message("No new files to add to .gitignore.")
+  }
+} else {
+  message("No files larger than 100 MB found.")
+}
+```
+
+::: {style="text-align: center; margin-top: 20px;"}
+<button onclick="window.open(&#39;https://github.com/SigOiry/GAM_Chla_MedSea/raw/refs/heads/main/Output/Aveiro/Macrofauna_Grid_Aveiro.zip&#39;, &#39;_blank&#39;);" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+
+Download extracted data from the Macrofauna Grid
+</button>
+:::
+
+# Methods
+
+Macrofauna sampling was conducted during the field campaign in the Ria de Aveiro Lagoon, which took place from July 14th to 18th, 2025. Sampling effort was distributed across two sites: “Rewilded” and “Natural.” In this study, the sampling points will be compared with metrics derived from Sentinel-2 imagery. The Sentinel-2 image used was acquired on July 15th, 2025, and corresponds to a Level-2A product, which has been atmospherically corrected and orthorectified by the data provider using Sen2Cor.
+
+```{r leafletmap}
+#| fig-cap: Map of macrofauna sampling points of the Rewrite Project, in Ria de Aveiro Lagoon. 
+#| echo: false
+#| error: false
+#| message: false
+#| warning: false
+#| out-width: "95%"
+
+library(leaflet)
+library(htmlwidgets)
+library(jsonlite)
+library(sf)
+library(tidyverse)
+
+sampling_point <- read_sf("Data/Aveiro_Lagoon/SHP/Aveiro grid/Aveiro_grid_info.shp")
+
+bb <- st_bbox(sampling_point) %>% 
+  as.numeric()
+
+bb_poly_rewilded <- sampling_point %>%          # keep it an sf
+  filter(site == "rewilded") %>% 
+  st_bbox() %>% 
+  st_as_sfc()                                   # → sfc_POLYGON
+
+bb_poly_natural <- sampling_point %>% 
+  filter(site != "rewilded") %>% 
+  st_bbox() %>% 
+  st_as_sfc()
+
+bbox_sf <- rbind(
+  st_sf(site = "rewilded", geometry = bb_poly_rewilded),
+  st_sf(site = "natural",  geometry = bb_poly_natural)
+)
+
+  
+pal <- colorFactor(
+  palette = "Set1",          
+  domain  = sampling_point$site
+)
+
+m <- leaflet() %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  fitBounds(
+    lng1 = bb[1], lat1 = bb[2],
+    lng2 = bb[3], lat2 = bb[4]
+  )%>%                                  
+  addCircleMarkers(
+    data        = sampling_point,            
+    radius      = 6,
+    stroke      = FALSE,
+    fillColor   = ~pal(site),               
+    fillOpacity = 0.9,
+    label       = ~name,                     
+    labelOptions = labelOptions(
+      direction = "auto",
+      textsize  = "12px",
+      style     = list("font-weight" = "normal")
+    )
+  ) %>%
+  addLegend(                                
+    "bottomright",
+    pal     = pal,
+    values  = sampling_point$site,
+    title   = "Site",
+    opacity = 1
+  ) %>% 
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>% 
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) 
+
+m 
+
+```
+
+## Images processing
+
+All image processing was performed in R, using the *terra*, *sf* and the *tidyverse* packages.
+
+### NDVI
+
+The NDVI as been computed using the following equation:
+
+$$
+NDVI = (B8-B4)/(B8+B4)
+$$
+
+### Seagrass Percent Cover
+
+The methodology applied in this study is adapted from [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033).
+
+Seagrass Percentage Cover (SPC) was derived from the NDVI using the equation established by [Zoffoli et al. (2020)](https://doi.org/10.1016/j.rse.2020.112020):
+
+$$
+SPC = 172.06 * NDVI - 22.18
+$$ \### SHSI
+
+This methodology is currently under review but a draft of the submitted paper can be found [here](https://sigoiry.github.io/HeatWave_Seagrasses).
+
+Based on the observed spectral changes in seagrasses exposed to HWs, we developed a new radiometric index to better detect the radiometric change caused by the HW. The browning of the leaves was characterized by substantial radiometric changes in both the green and red-edge spectral regions. The Seagrass Heat Shock Index (SHSI) was introduced as the reflectance line height at 740 nm, compared to the 560 - 842 nm baseline. Namely the SHSI subtracts the reflectance observed at 740 nm to the linearly interpolated reflectance between 560 and 842 nm, so that the index is positive in the case of brown, HW-impacted seagrass leaves, and negative in the case of green, non-impacted leaves. Compared to [the submited version of the index](https://sigoiry.github.io/HeatWave_Seagrasses/#optical-measurements), the SHSI used in this study has been normalized to constrain its values strictly between -1 and 1:
+
+$$
+\text{SHSI} = (I_{SHSI} - R(740))/(I_{SHSI} + R(740))
+$$
+
+where :
+
+$$
+I_{SHSI} = R(560) + \tau    [R(842) - R(560)]
+$$ and :
+
+$$
+\tau = \frac{740 - 560}{842 - 560}
+$$
+
+where $R(560)$, $R(740)$, and $R(842)$ represent the reflectance at 560, 740, and 842 nm, respectively, and $\tau$ is equal to a contant of 0.64. These wavelengths were selected to align with the spectral resolution of satellites missions such as Sentinel-2, for broader remote sensing application.
+
+## Results
+
+### Site Rewilded
+
+```{r rewilded processing}
+#| echo: false
+#| eval: false
+#| warning: false
+
+library(MapRs)
+
+sampling_point <- read_sf("Data/Aveiro_Lagoon/SHP/Aveiro grid/Aveiro_grid_info.shp")
+
+bb <- st_bbox(sampling_point) %>% 
+  as.numeric()
+
+bb_poly_rewilded <- sampling_point %>%          # keep it an sf
+  filter(site == "rewilded") %>% 
+  st_bbox() %>% 
+  st_as_sfc()                                   # → sfc_POLYGON
+
+bb_poly_natural <- sampling_point %>% 
+  filter(site != "rewilded") %>% 
+  st_bbox() %>% 
+  st_as_sfc()
+
+bbox_sf <- rbind(
+  st_sf(site = "rewilded", geometry = bb_poly_rewilded),
+  st_sf(site = "natural",  geometry = bb_poly_natural)
+) %>% 
+  dplyr::filter(site == "rewilded")
+
+S2_img <- MapRs::Read_S2("Data/SAFE/S2C_MSIL2A_20250715T113341_N0511_R080_T29TNF_20250715T165315.SAFE") 
+
+bbox_32629 <- st_transform(bbox_sf, st_crs(S2_img)) %>% 
+  vect() %>% 
+  buffer(20)
+
+S2_img_cropped <- (S2_img) %>% 
+  crop(bbox_32629, mask = T) - 1000 ### Crop and Correct the offset applied on the baseline after 4.00
+
+sampling_point_32629 <- sampling_point %>% 
+  st_transform(st_crs(S2_img)) 
+
+NDVI <- (S2_img_cropped$B08-S2_img_cropped$B04)/(S2_img_cropped$B08+S2_img_cropped$B04)
+
+SPC <- 172.06*NDVI-22.18
+
+values(SPC)[values(SPC) > 100] <- 100
+values(SPC)[values(SPC) < 0] <- 0
+
+SHSI <- ((S2_img_cropped$B03+0.64*(S2_img_cropped$B08-S2_img_cropped$B03))-S2_img_cropped$B06)/((S2_img_cropped$B03+0.64*(S2_img_cropped$B08-S2_img_cropped$B03))+S2_img_cropped$B06)
+
+
+stk_metrics <- c(SPC,NDVI,SHSI)
+names(stk_metrics) <- c("SPC","NDVI","SHSI")
+
+writeRaster(stk_metrics, "Data/Aveiro_Lagoon/Output/metrics_rewilded.tif", overwrite=T)
+```
+
+```{r stat maps}
+#| echo: false
+#| eval: true
+#| warning: false
+
+library(terra)
+library(tidyverse)
+
+mask <- vect("Data/Aveiro_Lagoon/SHP/mask_rewilded.shp")
+rast <- rast("Data/Aveiro_Lagoon/Output/metrics_rewilded.tif") %>% 
+  crop(mask, mask = T) %>% 
+  as.data.frame()
+
+mean_NDVI <- round(mean(rast$NDVI),2)
+max_NDVI <- round(max(rast$NDVI),2)
+
+mean_SPC <- round(mean(rast$SPC),2)
+max_SPC <- round(max(rast$SPC),2)
+
+mean_SHSI <- round(mean(rast$SHSI),2)
+max_SHSI <- round(max(rast$SHSI),2)
+
+```
+
+@fig-Maps_Rewilded shows the spatial distribution of the three satellite-derived metrics considered for the rewilded study site in the Ria de Aveiro Lagoon. The average NDVI within the extent of the macrofauna sampling stations was only `r mean_NDVI`, with a maximum of `r max_NDVI` observed in the central part of the meadow. When converted to Seagrass Percent Cover (SPC), this site exhibited a low average SPC of `r mean_SPC`%, just above the 20% threshold commonly used to define a seagrass meadow ([Zoffoli et al., 2020](https://www.sciencedirect.com/science/article/pii/S0034425720303904#s0070)). In the densest part of the meadow, SPC reached up to `r max_SPC`%. 
+Regarding the SHSI, which serves as an indicator of heat-induced color change in seagrass, the average value was `r mean_SHSI`, suggesting that the meadow was not affected by a heatwave at the time of observation.
+
+```{r Maps Metrics}
+#| fig-cap: Map of satellite derived metrics in the rewilded site of Ria de Aveiro Lagoon
+#| label: fig-Maps_Rewilded
+#| echo: false
+#| error: false
+#| message: false
+#| warning: false
+#| out-width: "100%"
+
+library(leafsync)
+library(terra)
+library(tidyverse)
+library(sf)
+
+####################################################################### NDVI
+pal_NDVI <- colorNumeric(
+  palette = RColorBrewer::brewer.pal(11, "Spectral"),
+  domain  = NULL,
+  na.color = "transparent",
+  reverse = T
+)
+
+mask <- vect("Data/Aveiro_Lagoon/SHP/mask_rewilded_4326.shp")
+
+stk_metrics <- rast("Data/Aveiro_Lagoon/Output/metrics_rewilded.tif") %>% 
+  project(crs("EPSG:4326")) %>% 
+  crop(mask, mask = T)
+
+sampling_point <- read_sf("Data/Aveiro_Lagoon/SHP/Aveiro grid/Aveiro_grid_info.shp") %>% 
+  st_transform(crs("EPSG:32629"))
+
+
+NDVI <- stk_metrics$NDVI
+
+# extracted_values <- terra::extract(stk_metrics,sampling_point)
+
+values(NDVI)[values(NDVI) <0] <- NA
+
+
+# build the leaflet map
+NDVI_map <- leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = NDVI, 
+    # project = TRUE,
+    colors  = pal_NDVI, 
+    opacity = 1, 
+    layerId = "NDVI",
+    group = "NDVI"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal_NDVI, 
+    values = values(NDVI),
+    title  = "NDVI value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  leafem::addImageQuery(
+    # map    = .,
+    x = NDVI,
+    project = TRUE,
+    layerId= "NDVI",
+    type   = "mousemove",
+    digits = 2,
+    prefix = "",
+    position = "bottomright",
+
+  ) %>%
+  
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>% 
+      addLayersControl(overlayGroups = "NDVI")
+
+
+
+##################################################### SPC 
+
+# pal_SPC <- colorNumeric(
+#   palette = RColorBrewer::brewer.pal(11, "Spectral"),
+#   domain  = NULL,
+#   na.color = "transparent",
+#   reverse = T
+# )
+
+pal_SPC <- colorNumeric(
+  palette  = colorRampPalette( rev(RColorBrewer::brewer.pal(11, "RdYlGn")) )(255),
+  domain   = c(20, 60),      # adapt if your data range is different
+  na.color = "transparent"
+)
+
+
+SPC <- stk_metrics$SPC
+
+values(SPC)[values(SPC) <20] <- NA
+values(SPC)[values(NDVI) <0] <- NA
+
+ticks <- seq(20, 60, by = 10)    # 0, 20, 40, 60, 80, 100
+
+# build the leaflet map
+SPC_map <- leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = SPC, 
+    # project = TRUE,
+    colors  = pal_SPC, 
+    opacity = 1, 
+    layerId = "SPC",
+    group = "SPC"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal       = pal_SPC,
+    values    = ticks,           # fewer values → shorter legend
+    title     = "SPC (%)",
+    position  = "bottomright",
+    labFormat = labelFormat(suffix = "%")   # optional nice labels
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  leafem::addImageQuery(
+    # map    = .,
+    x = SPC,
+    project = TRUE,
+    layerId= "SPC",
+    type   = "mousemove",
+    digits = 2,
+    prefix = "",
+    position = "bottomright",
+
+  ) %>%
+  
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>% 
+      addLayersControl(overlayGroups = "SPC")
+
+##################################################### SPC 
+
+pal_SHSI <- colorNumeric(
+  palette  = colorRampPalette(c("#228B22",   # −0.1 → green
+                                "white",    #  0   → white
+                                "#8B4513")) #  0.1 → brown
+              (255),           # 255‑step gradient
+  domain   = c(-0.1, 0.1),
+  na.color = "transparent"
+)
+
+
+SHSI <- stk_metrics$SHSI
+
+NDVI_mask <- stk_metrics$NDVI
+
+values(SHSI)[values(NDVI_mask) <0] <- NA
+values(SHSI)[values(SHSI) < -0.1] <- -0.1
+values(SHSI)[values(SHSI) > 0.1] <- 0.1
+
+# build the leaflet map
+SHSI_map <- leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = SHSI, 
+    # project = TRUE,
+    colors  = pal_SHSI, 
+    opacity = 1, 
+    layerId = "SHSI",
+    group = "SHSI"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal_SHSI, 
+    values = values(SHSI),
+    title  = "SHSI value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  leafem::addImageQuery(
+    # map    = .,
+    x = SHSI,
+    project = TRUE,
+    layerId= "SHSI",
+    type   = "mousemove",
+    digits = 2,
+    prefix = "",
+    position = "bottomright",
+
+  ) %>%
+  
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>% 
+      addLayersControl(overlayGroups = "SHSI")
+
+
+sync(NDVI_map, SPC_map, SHSI_map, sync = "all",ncol = 2)
+```
+
+### Site Natural
+
+```{r natural processing}
+#| echo: false
+#| eval: false
+#| warning: false
+
+library(MapRs)
+
+sampling_point <- read_sf("Data/Aveiro_Lagoon/SHP/Aveiro grid/Aveiro_grid_info.shp")
+
+bb <- st_bbox(sampling_point) %>% 
+  as.numeric()
+
+bb_poly_natural <- sampling_point %>%          # keep it an sf
+  filter(site == "natural") %>% 
+  st_bbox() %>% 
+  st_as_sfc()                                   # → sfc_POLYGON
+
+bb_poly_rewilded <- sampling_point %>% 
+  filter(site != "natural") %>% 
+  st_bbox() %>% 
+  st_as_sfc()
+
+bbox_sf <- rbind(
+  st_sf(site = "natural", geometry = bb_poly_natural),
+  st_sf(site = "rewilded",  geometry = bb_poly_rewilded)
+) %>% 
+  dplyr::filter(site == "natural")
+
+S2_img <- MapRs::Read_S2("Data/SAFE/S2C_MSIL2A_20250715T113341_N0511_R080_T29TNF_20250715T165315.SAFE") 
+
+bbox_32629 <- st_transform(bbox_sf, st_crs(S2_img)) %>% 
+  vect() %>% 
+  buffer(20)
+
+S2_img_cropped <- (S2_img) %>% 
+  crop(bbox_32629, mask = T) - 1000 ### Crop and Correct the offset applied on the baseline after 4.00
+
+sampling_point_32629 <- sampling_point %>% 
+  st_transform(st_crs(S2_img)) 
+
+NDVI <- (S2_img_cropped$B08-S2_img_cropped$B04)/(S2_img_cropped$B08+S2_img_cropped$B04)
+
+SPC <- 172.06*NDVI-22.18
+
+values(SPC)[values(SPC) > 100] <- 100
+values(SPC)[values(SPC) < 0] <- 0
+
+SHSI <- ((S2_img_cropped$B03+0.64*(S2_img_cropped$B08-S2_img_cropped$B03))-S2_img_cropped$B06)/((S2_img_cropped$B03+0.64*(S2_img_cropped$B08-S2_img_cropped$B03))+S2_img_cropped$B06)
+
+
+stk_metrics <- c(SPC,NDVI,SHSI)
+names(stk_metrics) <- c("SPC","NDVI","SHSI")
+
+writeRaster(stk_metrics, "Data/Aveiro_Lagoon/Output/metrics_natural.tif", overwrite =T)
+```
+
+```{r stat maps natural}
+#| echo: false
+#| eval: true
+#| warning: false
+
+library(terra)
+library(tidyverse)
+
+mask_nat <- vect("Data/Aveiro_Lagoon/SHP/mask_natural.shp")
+rast_nat <- rast("Data/Aveiro_Lagoon/Output/metrics_natural.tif") %>% 
+  crop(mask_nat, mask = T) %>% 
+  as.data.frame()
+
+mean_NDVI_nat <- round(mean(rast_nat$NDVI),2)
+max_NDVI_nat <- round(max(rast_nat$NDVI),2)
+
+mean_SPC_nat <- round(mean(rast_nat$SPC),2)
+max_SPC_nat <- round(max(rast_nat$SPC),2)
+
+mean_SHSI_nat <- round(mean(rast_nat$SHSI),2)
+max_SHSI_nat <- round(max(rast_nat$SHSI),2)
+
+```
+
+@fig-Maps_Natural shows the spatial distribution of the three satellite-derived metrics considered for the natural study site in the Ria de Aveiro Lagoon. The average NDVI within the extent of the macrofauna sampling stations was `r mean_NDVI_nat`, with a maximum of `r max_NDVI_nat` observed in the central part of the meadow. When converted to Seagrass Percent Cover (SPC), this site exhibited a higher average SPC compared to the rewilded site, with an average of `r mean_SPC_nat`%. In the densest part of the meadow, SPC reached up to `r max_SPC_nat`%. 
+Regarding the SHSI, which serves as an indicator of heat-induced color change in seagrass, the average value was `r mean_SHSI_nat`, suggesting that the meadow was not affected by a heatwave at the time of observation. However, some pixel of that study sites are showing SHSI values close to 0 and sometime positive, maybe suggesting heat-induce discoloration over some part of the meadow.
+
+```{r Maps Metrics Natural}
+#| fig-cap: Map of satellite derived metrics in the natural site of Ria de Aveiro Lagoon
+#| label: fig-Maps_Natural
+#| echo: false
+#| error: false
+#| message: false
+#| warning: false
+#| out-width: "100%"
+
+library(leafsync)
+library(terra)
+library(tidyverse)
+library(sf)
+
+####################################################################### NDVI
+pal_NDVI_nat <- colorNumeric(
+  palette = RColorBrewer::brewer.pal(11, "Spectral"),
+  domain  = NULL,
+  na.color = "transparent",
+  reverse = T
+)
+
+mask_nat <- vect("Data/Aveiro_Lagoon/SHP/mask_natural_4326.shp")
+
+stk_metrics_nat <- rast("Data/Aveiro_Lagoon/Output/metrics_natural.tif") %>% 
+  project(crs("EPSG:4326")) %>% 
+  crop(mask_nat, mask = T)
+
+sampling_point <- read_sf("Data/Aveiro_Lagoon/SHP/Aveiro grid/Aveiro_grid_info.shp") %>% 
+  st_transform(crs("EPSG:32629"))
+
+
+NDVI_nat <- stk_metrics_nat$NDVI
+
+# extracted_values <- terra::extract(stk_metrics,sampling_point)
+
+values(NDVI_nat)[values(NDVI_nat) <0] <- NA
+
+
+# build the leaflet map
+NDVI_map_nat <- leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = NDVI_nat, 
+    # project = TRUE,
+    colors  = pal_NDVI_nat, 
+    opacity = 1, 
+    layerId = "NDVI_nat",
+    group = "NDVI_nat"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal_NDVI_nat, 
+    values = values(NDVI_nat),
+    title  = "NDVI value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  leafem::addImageQuery(
+    # map    = .,
+    x = NDVI_nat,
+    project = TRUE,
+    layerId= "NDVI_nat",
+    type   = "mousemove",
+    digits = 2,
+    prefix = "",
+    position = "bottomright",
+
+  ) %>%
+  
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>% 
+      addLayersControl(overlayGroups = "NDVI_nat")
+
+
+
+##################################################### SPC 
+
+# pal_SPC <- colorNumeric(
+#   palette = RColorBrewer::brewer.pal(11, "Spectral"),
+#   domain  = NULL,
+#   na.color = "transparent",
+#   reverse = T
+# )
+
+pal_SPC_nat <- colorNumeric(
+  palette  = colorRampPalette( rev(RColorBrewer::brewer.pal(11, "RdYlGn")) )(255),
+  domain   = c(20, 70),      # adapt if your data range is different
+  na.color = "transparent"
+)
+
+
+SPC_nat <- stk_metrics_nat$SPC %>% 
+  crop(mask_nat, mask = T)
+
+values(SPC_nat)[values(SPC_nat) <20] <- NA
+values(SPC_nat)[values(NDVI_nat) <0] <- NA
+
+ticks_nat <- seq(20, 70, by = 10)    # 0, 20, 40, 60, 80, 100
+
+# build the leaflet map
+SPC_map_nat <- leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = SPC_nat, 
+    # project = TRUE,
+    colors  = pal_SPC_nat, 
+    opacity = 1, 
+    layerId = "SPC_nat",
+    group = "SPC_nat"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal       = pal_SPC_nat,
+    values    = ticks_nat,           # fewer values → shorter legend
+    title     = "SPC (%)",
+    position  = "bottomright",
+    labFormat = labelFormat(suffix = "%")   # optional nice labels
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  leafem::addImageQuery(
+    # map    = .,
+    x = SPC_nat,
+    project = TRUE,
+    layerId= "SPC_nat",
+    type   = "mousemove",
+    digits = 2,
+    prefix = "",
+    position = "bottomright",
+
+  ) %>%
+  
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>% 
+      addLayersControl(overlayGroups = "SPC_nat")
+
+##################################################### SPC 
+
+pal_SHSI_nat <- colorNumeric(
+  palette  = colorRampPalette(c("#228B22",   # −0.1 → green
+                                "white",    #  0   → white
+                                "#8B4513")) #  0.1 → brown
+              (255),           # 255‑step gradient
+  domain   = c(-0.1, 0.1),
+  na.color = "transparent"
+)
+
+
+SHSI_nat <- stk_metrics_nat$SHSI
+
+# plot(SHSI_nat)
+NDVI_mask_nat <- stk_metrics_nat$NDVI
+
+values(SHSI_nat)[values(NDVI_mask_nat) <0] <- NA
+values(SHSI_nat)[values(SHSI_nat) < -0.1] <- -0.1
+values(SHSI_nat)[values(SHSI_nat) > 0.1] <- 0.1
+
+# plot(SHSI_nat)
+# build the leaflet map
+SHSI_map_nat <- leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  # add the raster, assign a layerId so leafem knows which layer to query
+  addRasterImage(
+    x       = SHSI_nat, 
+    # project = TRUE,
+    colors  = pal_SHSI_nat, 
+    opacity = 1, 
+    layerId = "SHSI_nat",
+    group = "SHSI_nat"
+  ) %>% 
+  # add a continuous legend
+  addLegend(
+    pal    = pal_SHSI_nat, 
+    values = seq(-0.1,0.1, by = 0.1),
+    title  = "SHSI value",
+    position = "bottomright"
+  ) %>% 
+  # wire up click‐popup: show value with 2 decimals
+  leafem::addImageQuery(
+    # map    = .,
+    x = SHSI_nat,
+    project = TRUE,
+    layerId= "SHSI_nat",
+    type   = "mousemove",
+    digits = 2,
+    prefix = "",
+    position = "bottomright",
+
+  ) %>%
+  
+  leafem::addMouseCoordinates(css = list(
+    "font-size" = "20px",
+    "text-align" = "center",
+    "background-color" = "white",
+    "color" = "rgb(0, 0, 0)"
+  )) %>%
+  
+  # (6) Measurement tool (click to start drawing; click again to add points; double‐click to finish)
+  addMeasure(
+    position           = "topright",     # control’s corner on the map
+    primaryLengthUnit  = "meters",       # or "kilometers", "miles", etc.
+    primaryAreaUnit    = "sqmeters",     # or "hectares", "acres", etc.
+    activeColor        = "#3D535D",      # line color while drawing
+    completedColor     = "#7D4479",      # line color after finishing
+    captureZ           = FALSE           # if your CRS has elevation you can include Z
+  ) %>% 
+      addLayersControl(overlayGroups = "SHSI_nat")
+
+
+sync(NDVI_map_nat, SPC_map_nat, SHSI_map_nat, sync = "all",ncol = 2)
+```
+
+```{r point exctractions}
+#| echo: false
+#| eval: false
+#| warning: false
+
+sampling_point_rewilded <- read_sf("Data/Aveiro_Lagoon/SHP/Aveiro grid/Aveiro_grid_info.shp") %>% 
+  st_transform(crs("EPSG:32629")) %>%
+  dplyr::filter(site == "rewilded") %>% 
+  vect()
+
+stk_rewilded <- rast("Data/Aveiro_Lagoon/Output/metrics_rewilded.tif")
+
+df_rewilded <- terra::extract(stk_rewilded,sampling_point_rewilded)
+
+df_points_rewilded <- sampling_point_rewilded %>% 
+  as_tibble() %>% 
+  mutate(ID = 1:nrow(.)) %>% 
+  left_join(df_rewilded, by = "ID") %>% 
+  dplyr::select(-ID)
+
+sampling_point_natural <- read_sf("Data/Aveiro_Lagoon/SHP/Aveiro grid/Aveiro_grid_info.shp") %>% 
+  st_transform(crs("EPSG:32629")) %>%
+  dplyr::filter(site == "natural") %>% 
+  vect()
+
+stk_natural <- rast("Data/Aveiro_Lagoon/Output/metrics_natural.tif")
+
+df_natural<- terra::extract(stk_natural,sampling_point_natural)
+
+df_points_natural <- sampling_point_natural %>% 
+  as_tibble() %>% 
+  mutate(ID = 1:nrow(.)) %>% 
+  left_join(df_natural, by = "ID") %>% 
+  dplyr::select(-ID)
+
+df_out <- df_points_natural %>% 
+  rbind(df_points_rewilded)
+
+write.csv(df_out, "Output/Aveiro/Aveiro_MacrofaunaGrid_Satellite_Metrics/df_sampling_points_Aveiro.csv", row.names = F)
+writeRaster(stk_rewilded,"Output/Aveiro/Aveiro_MacrofaunaGrid_Satellite_Metrics/Rewilded_Metrics.tiff")
+writeRaster(stk_natural,"Output/Aveiro/Aveiro_MacrofaunaGrid_Satellite_Metrics/Natural_Metrics.tiff")
+
+```
+
+```{r zip outputs}
+#| echo: false
+#| message: false
+#| warning: false
+#| cache: false
+#| eval: false
+
+
+# ---- settings ----
+folder_to_zip <- "Output/Aveiro/Aveiro_MacrofaunaGrid_Satellite_Metrics"   # directory whose contents you want to archive
+zip_file      <- "Output/Aveiro/Macrofauna_Grid_Aveiro.zip"
+
+# ---- create the zip ----
+# list all files (recursive = TRUE grabs sub-folders too; set FALSE if you only
+# want the top-level files)
+files <- list.files(folder_to_zip, recursive = TRUE, full.names = TRUE)
+
+# make sure you’re in the folder so the archive has relative paths, not full paths
+
+utils::zip(zipfile = zip_file, files = files)
+```
+
+

@@ -5,11 +5,13 @@ editor_options:
 ---
 
 <!-- ::: {style="text-align: center; margin-top: 20px;"} -->
+
 <!-- <button onclick="window.open(&#39;https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Project_Cadiz.zip&#39;, &#39;_blank&#39;);" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;"> -->
 
 <!-- Download the Qgis project of Cadiz Bay -->
 
 <!-- </button> -->
+
 <!-- ::: -->
 
 ```{r update gitignore}
@@ -135,9 +137,7 @@ Ria de Aveiro is a shallow coastal lagoon located on the northwest coast of Port
   // If you want the warning to appear immediately on page load, call showWarning():
   window.addEventListener('DOMContentLoaded', showWarning);
 </script>
-
 ```
-
 
 ```{r leafletmap Intertidal_RA}
 #| label: fig-map_IZ_RA
@@ -232,7 +232,6 @@ leaflet(polygons) %>%
     position = "bottomleft"
   )
 ```
-
 
 For this site, a time series of the Sentinel-2 missions has been used to monitor the seagrass meadow since 2017 (@tbl-images_RA). This work was published by [Zoffoli et al. (2021)](https://doi.org/10.1016/j.ecolind.2021.108033). The present work updates the time series from Zoffoli et al. (2021) by incorporating newly available images and computing additional metrics (see [Methodology](https://sigoiry.github.io/Coring_Carbon_Seagrasses/#sec-Methodology)).
 
@@ -918,7 +917,6 @@ df_all_by_site %>%
         axis.ticks.x = element_blank())
 
 ```
-
 
 ## Historical seagrass patches of the meadow
 
