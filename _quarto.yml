@@ -8,8 +8,6 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: Bourgneuf_Bay.qmd
-        text: Bourngeuf Bay
       - href: Cadiz_Bay.qmd
         text: Cadiz Bay
       - text: Ria de Aveiro Lagoon      # label that shows in the bar
