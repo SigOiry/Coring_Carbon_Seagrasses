@@ -1,0 +1,57 @@
+---
+title: "Selection of sampling site for the fieldtrip of September 2025"
+editor_options: 
+  chunk_output_type: console
+---
+
+::: {style="text-align: center; margin-top: 20px;"}
+<button onclick="window.open(&#39;https://github.com/SigOiry/Coring_Carbon_Seagrasses/raw/refs/heads/main/Data/QGIS/Qgis_Bourgneuf_Bay.zip&#39;, &#39;_blank&#39;);" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+
+Download the Qgis project of Bourgneuf Bay
+
+</button>
+:::
+
+```{r update gitignore}
+#| cache: false
+#| echo: false
+#| warning: false
+#| eval: false
+
+library(fs)
+
+# Define the size threshold in bytes (100 MB)
+size_threshold <- 100 * 1024 * 1024
+
+# Get a list of all files in the repository
+files <- dir_ls(recurse = TRUE, type = "file")
+
+# Filter files larger than the size threshold
+large_files <- files[file_info(files)$size > size_threshold]
+
+# Check if there are large files
+if (length(large_files) > 0) {
+  # Read the existing .gitignore file if it exists
+  gitignore_path <- ".gitignore"
+  gitignore_content <- if (file_exists(gitignore_path)) {
+    readLines(gitignore_path)
+  } else {
+    character(0)
+  }
+  
+  # Identify files not already in .gitignore
+  files_to_add <- large_files[!large_files %in% gitignore_content]
+  
+  # Append new large files to .gitignore
+  if (length(files_to_add) > 0) {
+    writeLines(c(gitignore_content, files_to_add), gitignore_path)
+    message(length(files_to_add), " file(s) added to .gitignore.")
+  } else {
+    message("No new files to add to .gitignore.")
+  }
+} else {
+  message("No files larger than 100 MB found.")
+}
+```
+
+Bourgneuf Bay is a broad, shallow
