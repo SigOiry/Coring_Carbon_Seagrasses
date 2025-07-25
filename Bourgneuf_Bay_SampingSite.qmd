@@ -1,5 +1,5 @@
 ---
-title: "Selection of sampling site for the fieldtrip of September 2025"
+title: ""
 editor_options: 
   chunk_output_type: console
 ---
@@ -47,4 +47,38 @@ if (length(large_files) > 0) {
 }
 ```
 
-Bourgneuf Bay is a broad, shallow
+::: {=html}
+<iframe
+  id="myiframe"
+  src="https://polychaeteapp.shinyapps.io/bourgneuf_site_selection"
+  style="
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: block;
+    z-index: 100;
+    background: white;
+  ">
+</iframe>
+
+<script>
+  function getNavbarHeight() {
+    // Try to find common Quarto navbar classes
+    let nav = document.querySelector('.quarto-navbar, .navbar, nav.navbar');
+    return nav ? nav.offsetHeight : 0;
+  }
+  function resizeIframe() {
+    var navbarHeight = getNavbarHeight();
+    var buffer = 16; // Add a small buffer (adjust as needed)
+    var iframe = document.getElementById('myiframe');
+    iframe.style.top = navbarHeight + 'px';
+    iframe.style.height = (window.innerHeight - navbarHeight - 100) + 'px';
+  }
+  window.addEventListener('resize', resizeIframe);
+  window.addEventListener('DOMContentLoaded', resizeIframe);
+</script>
+:::

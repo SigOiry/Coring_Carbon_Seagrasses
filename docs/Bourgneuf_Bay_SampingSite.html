@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Selection of sampling site for the fieldtrip of September 2025 – Sampling_Cores_Carbon</title>
+<title>bourgneuf_bay_sampingsite – Sampling_Cores_Carbon</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,28 +142,42 @@ ul.task-list li input[type="checkbox"] {
         
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Selection of sampling site for the fieldtrip of September 2025</h1>
+
+
+
+<div class="{=html}">
+<iframe id="myiframe" src="https://polychaeteapp.shinyapps.io/bourgneuf_site_selection" style="
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: block;
+    z-index: 100;
+    background: white;
+  ">
+</iframe>
+<script>
+  function getNavbarHeight() {
+    // Try to find common Quarto navbar classes
+    let nav = document.querySelector('.quarto-navbar, .navbar, nav.navbar');
+    return nav ? nav.offsetHeight : 0;
+  }
+  function resizeIframe() {
+    var navbarHeight = getNavbarHeight();
+    var buffer = 16; // Add a small buffer (adjust as needed)
+    var iframe = document.getElementById('myiframe');
+    iframe.style.top = navbarHeight + 'px';
+    iframe.style.height = (window.innerHeight - navbarHeight - 100) + 'px';
+  }
+  window.addEventListener('resize', resizeIframe);
+  window.addEventListener('DOMContentLoaded', resizeIframe);
+</script>
 </div>
-
-
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>Bourgneuf Bay is a broad, shallow</p>
 
 
 

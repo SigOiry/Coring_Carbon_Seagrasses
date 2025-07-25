@@ -1,24 +1,17 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Where to perform the coring in each sites ?",
+    "objectID": "ShinyApp/Bourgneuf_Site_Selection/Meadow_samplingSite.html",
+    "href": "ShinyApp/Bourgneuf_Site_Selection/Meadow_samplingSite.html",
+    "title": "Sampling_Cores_Carbon",
     "section": "",
-    "text": "Visit the Github repository\nThis website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.\nIt gathers analysis done on two sites, Cadiz Bay in Spain ain a nd Bourgneuf Bay in France.\nMap of study sites, where coring will be perform in the frame of the Rewrite Project."
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     \n\n\n         0 0     false"
   },
   {
-    "objectID": "index.html#images-downloading-and-preprocessing",
-    "href": "index.html#images-downloading-and-preprocessing",
-    "title": "Where to perform the coring in each sites ?",
-    "section": "Images Downloading and preprocessing",
-    "text": "Images Downloading and preprocessing\nFor Landsat and SPOT imagery, we refer to the methodology described by Zoffoli et al. (2021).\nSentinel-2 images were downloaded from the ESA Copernicus plateform. For each study site, images were manually inspected to ensure they were cloud-free and acquired during low tide conditions. One image per year was selected, preferably around the date of maximum meadow extent as reported by Davies et al. (2024). To minimize interannual variability, images from the same Sentinel-2 tile were selected for each site. All images selected were pre-processed using baseline version 4.00 or higher. Consequently, 1000 was subtracted from the raw reflectance values of each band to obtain usable surface reflectance values (More info)."
-  },
-  {
-    "objectID": "index.html#images-processing",
-    "href": "index.html#images-processing",
-    "title": "Where to perform the coring in each sites ?",
-    "section": "Images processing",
-    "text": "Images processing\nAll image processing was performed in R, using the terra and tidyverse packages.Maps were generated using the leaflet package.\n\nSeagrass Percent Cover\nThe methodology applied in this study is adapted from Zoffoli et al. (2021).\nSeagrass Percentage Cover (SPC) was derived from the NDVI using the equation established by Zoffoli et al. (2020):\n\\[\nSPC = 172.06 * NDVI - 22.18\n\\]\nPixels with SPC values below 20% were excluded from the analysis, due to the high risk of misclassification with other vegetation types. After applying the transformation, pixels with exceptionally high NDVI occasionally resulted in SPC values exceeding 100%. These were capped at 100%.\n\n\nHistorical seagrass patches of the meadow\nTo identify consistent high-coverage areas within the meadow, we calculated the number of consecutive years—starting from 2024—in which each pixel exhibited an SPC above 50%. For example, a value of 0 indicates that in 2024 the SPC was below 50%, while a value of 5 means that SPC exceeded 50% every year since 2019 (i.e., 2024 − 5), but not in 2018.\n\n\nYear of the maximum of cover\nFor each pixel, the year corresponding to its maximum SPC value during the time series was identified and recorded.\n\n\nRate of decline since the date of maximum\nStarting from the year of maximum SPC, a linear regression was fitted for each pixel to model SPC change over time. The slope of the regression line, when statistically significant (p-value &lt; 0.05), was assigned as the pixel’s rate of decline (expressed as percent cover change per year)."
+    "objectID": "Data/Bourgneuf_Bay/SHP/mask_meadow_4326.html",
+    "href": "Data/Bourgneuf_Bay/SHP/mask_meadow_4326.html",
+    "title": "Sampling_Cores_Carbon",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       PROJCRS[“WGS 84 / UTM zone 30N”,BASEGEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],MEMBER[“World Geodetic System 1984 (G2296)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],ID[“EPSG”,4326]],CONVERSION[“UTM zone 30N”,METHOD[“Transverse Mercator”,ID[“EPSG”,9807]],PARAMETER[“Latitude of natural origin”,0,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8801]],PARAMETER[“Longitude of natural origin”,-3,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8802]],PARAMETER[“Scale factor at natural origin”,0.9996,SCALEUNIT[“unity”,1],ID[“EPSG”,8805]],PARAMETER[“False easting”,500000,LENGTHUNIT[“metre”,1],ID[“EPSG”,8806]],PARAMETER[“False northing”,0,LENGTHUNIT[“metre”,1],ID[“EPSG”,8807]]],CS[Cartesian,2],AXIS[“(E)”,east,ORDER[1],LENGTHUNIT[“metre”,1]],AXIS[“(N)”,north,ORDER[2],LENGTHUNIT[“metre”,1]],USAGE[SCOPE[“Navigation and medium accuracy spatial referencing.”],AREA[“Between 6°W and 0°W, northern hemisphere between equator and 84°N, onshore and offshore. Algeria. Burkina Faso. Côte’ Ivoire (Ivory Coast). Faroe Islands - offshore. France. Ghana. Gibraltar. Ireland - offshore Irish Sea. Mali. Mauritania. Morocco. Spain. United Kingdom (UK).”],BBOX[0,-6,84,0]],ID[“EPSG”,32630]] +proj=utm +zone=30 +datum=WGS84 +units=m +no_defs 3114 32630 EPSG:32630 WGS 84 / UTM zone 30N utm EPSG:7030 false"
   },
   {
     "objectID": "Data/Aveiro_Lagoon/SHP/mask_rewilded_4326.html",
@@ -168,13 +161,6 @@
     "text": "Results\n\nSite Rewilded\nFigure 1 shows the spatial distribution of the three satellite-derived metrics considered for the rewilded study site in the Ria de Aveiro Lagoon. The average NDVI within the extent of the macrofauna sampling stations was only 0.24, with a maximum of 0.48 observed in the central part of the meadow. When converted to Seagrass Percent Cover (SPC), this site exhibited a low average SPC of 22.3%, just above the 20% threshold commonly used to define a seagrass meadow (Zoffoli et al., 2020). In the densest part of the meadow, SPC reached up to 60.55%. Regarding the SHSI, which serves as an indicator of heat-induced color change in seagrass, the average value was -0.04, suggesting that the meadow was not affected by a heatwave at the time of observation.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 1: Map of satellite derived metrics in the rewilded site of Ria de Aveiro Lagoon\n\n\n\n\n\n\nSite Natural\nFigure 2 shows the spatial distribution of the three satellite-derived metrics considered for the natural study site in the Ria de Aveiro Lagoon. The average NDVI within the extent of the macrofauna sampling stations was 0.41, with a maximum of 0.55 observed in the central part of the meadow. When converted to Seagrass Percent Cover (SPC), this site exhibited a higher average SPC compared to the rewilded site, with an average of 49.1%. In the densest part of the meadow, SPC reached up to 71.82%. Regarding the SHSI, which serves as an indicator of heat-induced color change in seagrass, the average value was -0.04, suggesting that the meadow was not affected by a heatwave at the time of observation. However, some pixel of that study sites are showing SHSI values close to 0 and sometime positive, maybe suggesting heat-induce discoloration over some part of the meadow.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: Map of satellite derived metrics in the natural site of Ria de Aveiro Lagoon"
   },
   {
-    "objectID": "Bourgneuf_Bay_SampingSite.html",
-    "href": "Bourgneuf_Bay_SampingSite.html",
-    "title": "Selection of sampling site for the fieldtrip of September 2025",
-    "section": "",
-    "text": "Bourgneuf Bay is a broad, shallow"
-  },
-  {
     "objectID": "Data/Aveiro_Lagoon/SHP/mask_land_intertidal_Aveiro.html",
     "href": "Data/Aveiro_Lagoon/SHP/mask_land_intertidal_Aveiro.html",
     "title": "Sampling_Cores_Carbon",
@@ -194,5 +180,26 @@
     "title": "Sampling_Cores_Carbon",
     "section": "",
     "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       PROJCRS[“WGS 84 / UTM zone 30N”,BASEGEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],ID[“EPSG”,4326]],CONVERSION[“UTM zone 30N”,METHOD[“Transverse Mercator”,ID[“EPSG”,9807]],PARAMETER[“Latitude of natural origin”,0,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8801]],PARAMETER[“Longitude of natural origin”,-3,ANGLEUNIT[“degree”,0.0174532925199433],ID[“EPSG”,8802]],PARAMETER[“Scale factor at natural origin”,0.9996,SCALEUNIT[“unity”,1],ID[“EPSG”,8805]],PARAMETER[“False easting”,500000,LENGTHUNIT[“metre”,1],ID[“EPSG”,8806]],PARAMETER[“False northing”,0,LENGTHUNIT[“metre”,1],ID[“EPSG”,8807]]],CS[Cartesian,2],AXIS[“(E)”,east,ORDER[1],LENGTHUNIT[“metre”,1]],AXIS[“(N)”,north,ORDER[2],LENGTHUNIT[“metre”,1]],USAGE[SCOPE[“Navigation and medium accuracy spatial referencing.”],AREA[“Between 6°W and 0°W, northern hemisphere between equator and 84°N, onshore and offshore. Algeria. Burkina Faso. Côte’ Ivoire (Ivory Coast). Faroe Islands - offshore. France. Ghana. Gibraltar. Ireland - offshore Irish Sea. Mali. Mauritania. Morocco. Spain. United Kingdom (UK).”],BBOX[0,-6,84,0]],ID[“EPSG”,32630]] +proj=utm +zone=30 +datum=WGS84 +units=m +no_defs 3114 32630 EPSG:32630 WGS 84 / UTM zone 30N utm EPSG:7030 false"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Where to perform the coring in each sites ?",
+    "section": "",
+    "text": "Visit the Github repository\nThis website gathers all the processing steps used to identify the densest, most recent, and most consistent seagrass patches across different sites, in order to plan future coring strategies.\nIt gathers analysis done on two sites, Cadiz Bay in Spain ain a nd Bourgneuf Bay in France.\nMap of study sites, where coring will be perform in the frame of the Rewrite Project."
+  },
+  {
+    "objectID": "index.html#images-downloading-and-preprocessing",
+    "href": "index.html#images-downloading-and-preprocessing",
+    "title": "Where to perform the coring in each sites ?",
+    "section": "Images Downloading and preprocessing",
+    "text": "Images Downloading and preprocessing\nFor Landsat and SPOT imagery, we refer to the methodology described by Zoffoli et al. (2021).\nSentinel-2 images were downloaded from the ESA Copernicus plateform. For each study site, images were manually inspected to ensure they were cloud-free and acquired during low tide conditions. One image per year was selected, preferably around the date of maximum meadow extent as reported by Davies et al. (2024). To minimize interannual variability, images from the same Sentinel-2 tile were selected for each site. All images selected were pre-processed using baseline version 4.00 or higher. Consequently, 1000 was subtracted from the raw reflectance values of each band to obtain usable surface reflectance values (More info)."
+  },
+  {
+    "objectID": "index.html#images-processing",
+    "href": "index.html#images-processing",
+    "title": "Where to perform the coring in each sites ?",
+    "section": "Images processing",
+    "text": "Images processing\nAll image processing was performed in R, using the terra and tidyverse packages.Maps were generated using the leaflet package.\n\nSeagrass Percent Cover\nThe methodology applied in this study is adapted from Zoffoli et al. (2021).\nSeagrass Percentage Cover (SPC) was derived from the NDVI using the equation established by Zoffoli et al. (2020):\n\\[\nSPC = 172.06 * NDVI - 22.18\n\\]\nPixels with SPC values below 20% were excluded from the analysis, due to the high risk of misclassification with other vegetation types. After applying the transformation, pixels with exceptionally high NDVI occasionally resulted in SPC values exceeding 100%. These were capped at 100%.\n\n\nHistorical seagrass patches of the meadow\nTo identify consistent high-coverage areas within the meadow, we calculated the number of consecutive years—starting from 2024—in which each pixel exhibited an SPC above 50%. For example, a value of 0 indicates that in 2024 the SPC was below 50%, while a value of 5 means that SPC exceeded 50% every year since 2019 (i.e., 2024 − 5), but not in 2018.\n\n\nYear of the maximum of cover\nFor each pixel, the year corresponding to its maximum SPC value during the time series was identified and recorded.\n\n\nRate of decline since the date of maximum\nStarting from the year of maximum SPC, a linear regression was fitted for each pixel to model SPC change over time. The slope of the regression line, when statistically significant (p-value &lt; 0.05), was assigned as the pixel’s rate of decline (expressed as percent cover change per year)."
   }
 ]

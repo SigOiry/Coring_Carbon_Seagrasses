@@ -228,6 +228,8 @@ bbox_sf <- rbind(
 ) %>% 
   dplyr::filter(site == "rewilded")
 
+write_sf(bbox_sf, "ShinyApp/Bourgneuf_Site_Selection/Meadow_samplingSite.shp")
+
 S2_img <- MapRs::Read_S2("Data/SAFE/S2C_MSIL2A_20250715T113341_N0511_R080_T29TNF_20250715T165315.SAFE") 
 
 bbox_32629 <- st_transform(bbox_sf, st_crs(S2_img)) %>% 
