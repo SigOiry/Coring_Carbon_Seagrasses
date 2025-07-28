@@ -186,33 +186,72 @@ server <- function(input, output, session) {
         )
     })
     
-    observeEvent(input$map_draw_edited_features, {
-        geo <- input$map_draw_edited_features
-        if (is.null(geo)) return()
-        txt   <- jsonlite::toJSON(geo, auto_unbox = TRUE, digits = 8)
-        newSF <- sf::st_read(txt, quiet = TRUE) %>% st_transform(crs(rast_stack))
-        if (nrow(newSF) == 0) return()
-        if (nrow(newSF) == nrow(rv$polygons)) {
-            newSF <- st_set_geometry(rv$polygons, st_geometry(newSF))
-            rv$polygons <- newSF
-        } else {
-            for (i in seq_len(nrow(newSF))) {
-                dists <- st_distance(st_centroid(newSF[i,]), st_centroid(rv$polygons))
-                idx <- which.min(dists)
-                st_geometry(rv$polygons)[idx] <- st_geometry(newSF)[i]
+    observeEvent(input$showRasters, {
+        # Find the value that was just added (clicked)
+        if (!is.null(rv$lastClicked)) {
+            newly_checked <- setdiff(input$showRasters, rv$lastClicked)
+            if (length(newly_checked) == 1) {
+                updatePrettyCheckboxGroup(
+                    session,
+                    inputId = "showRasters",
+                    selected = newly_checked
+                )
+            } else if (length(input$showRasters) == 0) {
+                # Allow all unchecked
+                updatePrettyCheckboxGroup(
+                    session,
+                    inputId = "showRasters",
+                    selected = character(0)
+                )
             }
         }
-        rv$polygons <- sf::st_transform(rv$polygons, 4326)
-        sf_poly <- rv$polygons %>% st_transform(crs(rast_stack))
-        # extract pixels
-        ext <- terra::extract(rast_stack, vect(sf_poly), df = TRUE)
-        ext$Sampling <- sf_poly$Sampling[ext$ID]
-        # tidy
-        df <- ext %>%
-            select(-ID) %>%
-            pivot_longer(cols = -Sampling, names_to = "metric", values_to = "value")
-        metrics_df(df) # <- add this line!
+        rv$lastClicked <- input$showRasters
+    }, ignoreInit = TRUE)
+    
+    observeEvent(input$map_draw_edited_features, {
+      geo <- input$map_draw_edited_features
+      if (is.null(geo)) return()
+      
+      # 1. Read the new geometries (in your raster CRS)
+      txt   <- jsonlite::toJSON(geo, auto_unbox = TRUE, digits = 8)
+      newSF <- sf::st_read(txt, quiet = TRUE) %>% 
+        st_transform(crs(rast_stack))
+      if (nrow(newSF) == 0) return()
+      
+      # 2. Grab the layerIds of all edited features
+      modified_ids <- newSF$layerId
+      
+      # 3. Pull out the old polygons that were NOT modified
+      oldSF    <- rv$polygons
+      keepSF   <- oldSF[! oldSF$Sampling %in% modified_ids, ]
+      
+      # 4. For each edited feature, carry over its old Sampling value
+      #    (match by layerId)
+      newSF$Sampling <- oldSF$Sampling[ match(newSF$layerId, oldSF$Sampling) ]
+      newSF <- newSF %>% 
+        dplyr::select(Sampling,geometry)
+      
+      # 5. Reassemble: unmodified + updated, then store back in rv
+      combined <- dplyr::bind_rows(keepSF, newSF) %>% 
+        sf::st_transform(4326)
+      rv$polygons <- combined
+      
+      # 6. Re-extract the raster values
+      sf_poly <- combined %>% st_transform(crs(rast_stack))
+      ext     <- terra::extract(rast_stack, vect(sf_poly), df = TRUE)
+      ext$Sampling <- sf_poly$Sampling[ext$ID]
+      
+      # 7. Tidy & push to your metrics_df
+      df <- ext %>%
+        select(-ID) %>%
+        tidyr::pivot_longer(
+          cols        = -Sampling,
+          names_to    = "metric",
+          values_to   = "value"
+        )
+      metrics_df(df)
     })
+    
     
     # render the base map
     output$map <- renderLeaflet({
