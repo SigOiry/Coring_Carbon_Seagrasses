@@ -4,7 +4,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-
 ```{r update gitignore}
 #| cache: false
 #| echo: false
@@ -48,10 +47,8 @@ if (length(large_files) > 0) {
 ```
 
 ::: {=html}
-<iframe
-  id="myiframe"
-  src="https://polychaeteapp.shinyapps.io/bourgneuf_site_selection"
-  style="
+```{=html}
+<iframe id="myiframe" src="https://polychaeteapp.shinyapps.io/bourgneuf_site_selection" style="
     position: absolute;
     top: 0;
     left: 0;
@@ -63,8 +60,11 @@ if (length(large_files) > 0) {
     z-index: 100;
     background: white;
   ">
+```
+
 </iframe>
 
+```{=html}
 <script>
   function getNavbarHeight() {
     // Try to find common Quarto navbar classes
@@ -81,4 +81,5 @@ if (length(large_files) > 0) {
   window.addEventListener('resize', resizeIframe);
   window.addEventListener('DOMContentLoaded', resizeIframe);
 </script>
+```
 :::

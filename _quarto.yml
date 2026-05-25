@@ -15,13 +15,11 @@ website:
           - href: Aveiro_Lagoon.qmd
             text: Mapping
           - href: Aveiro_Lagoon_Sampling.qmd
-            text: Sampling
-      - text: Bourngeuf Bay     # label that shows in the bar
-        menu:                   # dropdown starts here
-          - href: Bourgneuf_Bay.qmd
-            text: Mapping
-          - href: Bourgneuf_Bay_SampingSite.qmd
-            text: Sampling Site Selection
+            text: Sampling              # dropdown starts here
+      - href: Bourgneuf_Bay.qmd
+        text: Bourngeuf Bay 
+      - href: Bourgneuf_Bay_SampingSite.qmd
+        text: Sampling Site Selection
     
 format:
   html:

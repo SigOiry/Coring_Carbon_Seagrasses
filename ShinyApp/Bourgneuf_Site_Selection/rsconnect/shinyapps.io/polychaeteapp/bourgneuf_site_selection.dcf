@@ -5,6 +5,6 @@ account: polychaeteapp
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 15122426
-bundleId: 10687384
+bundleId: 12036862
 url: https://polychaeteapp.shinyapps.io/bourgneuf_site_selection/
 version: 1

@@ -691,7 +691,6 @@ leaflet() %>%
     layerId = "Amount of Years SPC higher 50",
     group = "Amount of Years SPC higher 50"
   ) %>%
-  
   # (b) Draw polygons, using site_pal(Sites) for both border and fill:
   addPolygons(
     data        = polygons,
